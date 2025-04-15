@@ -4,7 +4,7 @@ import React from 'react';
 
 const TabLayout = () => {
   return (
-    <Tabs>
+    <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
         name='home'
         options={{
