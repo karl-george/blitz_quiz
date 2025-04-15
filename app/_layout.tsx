@@ -4,6 +4,7 @@ import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import '@/global.css';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -26,7 +27,7 @@ const InitialLayout = () => {
     const inAuthGroup = segments[0] === '(auth)';
 
     if (isSignedIn && !inAuthGroup) {
-      router.replace('/(auth)/(tabs)');
+      router.replace('/(auth)/(tabs)/home');
     } else if (!isSignedIn && pathname !== '/') {
       router.replace('/');
     }
