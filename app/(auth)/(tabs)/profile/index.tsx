@@ -1,12 +1,18 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useUser } from '@clerk/clerk-expo';
-import { Ionicons } from '@expo/vector-icons';
+import Button from '@/components/Button';
 import Container from '@/components/Container';
+import { useClerk, useUser } from '@clerk/clerk-expo';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 const Profile = () => {
   const { user } = useUser();
+  const { signOut } = useClerk();
+
+  //TODO: Handle changing avatar
+  //TODO: Handle editing username and email. Maybe email should not be changable
+  //TODO: Find a better icon for pencil?
 
   return (
     <View className='flex-1 px-4'>
@@ -48,10 +54,26 @@ const Profile = () => {
       </View>
 
       {/* User Game Info Section */}
-      <View className='mt-6'>
-        <View>
+      <View className='mt-8'>
+        <View className='self-center'>
           <Container title='Rank' value='123' variant='small' />
         </View>
+        <View className='flex-row justify-between mt-2'>
+          <Container title='Correct Answers' value='80' variant='small' />
+          <Container title='Wrong Answers' value='12' variant='small' />
+          <Container title='Games Played' value='80' variant='small' />
+        </View>
+      </View>
+
+      {/* Account Control Buttons */}
+      <View className='gap-4 mt-8'>
+        <Button title='Sign Out' variant='fullWidth' onPress={signOut} />
+        <Button
+          title='Delete Account'
+          variant='fullWidth'
+          type='destructive'
+          onPress={() => user?.delete()}
+        />
       </View>
     </View>
   );
