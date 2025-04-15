@@ -10,7 +10,7 @@ module.exports = {
         light_bg: '#C0B5F8',
         border_light: '#D7D2F2',
         correct: '#1EC751',
-        wrong: '#E93030',
+        wrong: '#D82B2B',
         highlight: '#7740F2',
       },
     },
