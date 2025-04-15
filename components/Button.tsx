@@ -1,0 +1,34 @@
+import React from 'react';
+import { Text, TouchableOpacity } from 'react-native';
+
+interface ButtonProps {
+  title: string;
+  icon?: string;
+  onPress?: () => void;
+  variant: 'large' | 'small';
+}
+
+const styles = {
+  large: {
+    width: 'w-[180px]',
+    height: 'h-[130px]',
+  },
+  small: {
+    width: 'w-[100px]',
+    height: 'h-[80px]',
+  },
+};
+
+const Button = ({ title, icon, onPress, variant }: ButtonProps) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {}}
+      className={`items-center ${styles[variant].width} ${styles[variant].height} text-center border-2 border-border_light bg-light_bg rounded-2xl justify-center`}
+    >
+      {icon && <Text className='pt-4 pb-1 text-6xl'>{icon}</Text>}
+      <Text className='text-xl font-semibold text-white'>{title}</Text>
+    </TouchableOpacity>
+  );
+};
+
+export default Button;
