@@ -5,7 +5,8 @@ interface ButtonProps {
   title: string;
   icon?: string;
   onPress?: () => void;
-  variant: 'large' | 'small';
+  variant: 'large' | 'small' | 'fullWidth';
+  type?: 'destructive' | null;
 }
 
 const styles = {
@@ -17,16 +18,32 @@ const styles = {
     width: 'w-[100px]',
     height: 'h-[80px]',
   },
+  fullWidth: {
+    width: 'w-full',
+    height: 'h-[50px]',
+  },
 };
 
-const Button = ({ title, icon, onPress, variant }: ButtonProps) => {
+const textType = {
+  destructive: {
+    color: 'text-wrong',
+  },
+};
+
+const Button = ({ title, icon, onPress, variant, type }: ButtonProps) => {
   return (
     <TouchableOpacity
-      onPress={() => {}}
-      className={`items-center ${styles[variant].width} ${styles[variant].height} text-center border-2 border-border_light bg-light_bg rounded-2xl justify-center`}
+      onPress={onPress}
+      className={`items-center ${styles[variant].width} ${styles[variant].height} text-center border-2 border-border_light bg-light_bg rounded-xl justify-center`}
     >
       {icon && <Text className='pt-4 pb-1 text-6xl'>{icon}</Text>}
-      <Text className='text-xl font-semibold text-white'>{title}</Text>
+      <Text
+        className={`text-xl font-semibold ${
+          type ? textType[type].color : 'text-white'
+        } `}
+      >
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 };
