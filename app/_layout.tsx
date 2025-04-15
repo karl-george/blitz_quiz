@@ -1,10 +1,9 @@
+import '@/global.css';
 import { ClerkLoaded, ClerkProvider, useAuth } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import React, { useEffect } from 'react';
-import { Text, View } from 'react-native';
-import '@/global.css';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar, Text, View } from 'react-native';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -43,6 +42,7 @@ const InitialLayout = () => {
 
   return (
     <>
+      <StatusBar backgroundColor={'#CCB6FF'} barStyle={'dark'} />
       <Stack>
         <Stack.Screen name='index' options={{ headerShown: false }} />
         <Stack.Screen name='(auth)' options={{ headerShown: false }} />
