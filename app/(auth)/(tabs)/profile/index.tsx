@@ -3,16 +3,26 @@ import Container from '@/components/Container';
 import { useClerk, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const Profile = () => {
+  const [editable, setEditable] = useState<boolean>(false);
+  const [name, setName] = useState<string>('');
+
   const { user } = useUser();
   const { signOut } = useClerk();
 
   //TODO: Handle changing avatar
-  //TODO: Handle editing username and email. Maybe email should not be changable
-  //TODO: Find a better icon for pencil?
+
+  const handleNameChange = () => {
+    // Set/Update username
+    // Use validation to tell the user they can only use letters, numbers and '_' or '-'
+    //! Maybe store a name in the database and change that one so I can have more control of whats allowed
+    user?.update({ username: name });
+
+    setEditable(false);
+  };
 
   return (
     <View className='flex-1 px-4'>
@@ -33,21 +43,41 @@ const Profile = () => {
             </Text>
           </TouchableOpacity>
           <View className='px-4 mt-10'>
-            <View className='flex-row'>
+            <View className='flex-row items-center'>
               <Text className='text-xl text-white'>Name:</Text>
-              <Text className='ml-2 text-xl text-white'>{user?.fullName}</Text>
-              <TouchableOpacity className='ml-2'>
-                <Ionicons name='pencil' size={18} color='white' />
-              </TouchableOpacity>
+              {editable ? (
+                <View className=''>
+                  <TextInput
+                    placeholder='Name...'
+                    placeholderTextColor='#DBDBDB'
+                    value={name}
+                    onChangeText={setName}
+                    className='w-[250px] ml-2 px-2 py-1 text-white border rounded-lg border-border_light bg-slate-500'
+                  />
+                </View>
+              ) : (
+                <Text className='ml-2 text-xl text-white'>
+                  {user?.username ? user.username : user?.fullName}
+                </Text>
+              )}
+              {!editable ? (
+                <TouchableOpacity
+                  className='ml-2'
+                  onPress={() => setEditable((prevState) => !prevState)}
+                >
+                  <Ionicons name='pencil-outline' size={18} color='white' />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity className='ml-2' onPress={handleNameChange}>
+                  <Ionicons name='checkmark' size={24} color='white' />
+                </TouchableOpacity>
+              )}
             </View>
             <View className='flex-row mt-2'>
               <Text className='text-xl text-white'>Email:</Text>
               <Text className='ml-2 text-xl text-white'>
                 {user?.emailAddresses[0].emailAddress}
               </Text>
-              <TouchableOpacity className='ml-2'>
-                <Ionicons name='pencil' size={18} color='white' />
-              </TouchableOpacity>
             </View>
           </View>
         </View>
