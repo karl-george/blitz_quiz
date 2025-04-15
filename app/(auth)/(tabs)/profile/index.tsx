@@ -1,10 +1,58 @@
-import { View, Text } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useUser } from '@clerk/clerk-expo';
+import { Ionicons } from '@expo/vector-icons';
+import Container from '@/components/Container';
 
 const Profile = () => {
+  const { user } = useUser();
+
   return (
-    <View>
-      <Text>Profile</Text>
+    <View className='flex-1 px-4'>
+      <LinearGradient
+        colors={['#CCB6FF', '#986BFF']}
+        className='absolute top-0 bottom-0 left-0 right-0'
+      />
+      {/* Account Details Section */}
+      <View className='pt-10'>
+        <View className='pb-8 border-2 rounded-xl border-border_light bg-light_bg'>
+          <Image
+            src={user?.imageUrl}
+            className='absolute self-center border-2 -top-8 rounded-xl w-28 h-28 border-border_light'
+          />
+          <TouchableOpacity className='mt-24'>
+            <Text className='text-xl text-center text-white'>
+              Change Avatar
+            </Text>
+          </TouchableOpacity>
+          <View className='px-4 mt-10'>
+            <View className='flex-row'>
+              <Text className='text-xl text-white'>Name:</Text>
+              <Text className='ml-2 text-xl text-white'>{user?.fullName}</Text>
+              <TouchableOpacity className='ml-2'>
+                <Ionicons name='pencil' size={18} color='white' />
+              </TouchableOpacity>
+            </View>
+            <View className='flex-row mt-2'>
+              <Text className='text-xl text-white'>Email:</Text>
+              <Text className='ml-2 text-xl text-white'>
+                {user?.emailAddresses[0].emailAddress}
+              </Text>
+              <TouchableOpacity className='ml-2'>
+                <Ionicons name='pencil' size={18} color='white' />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* User Game Info Section */}
+      <View className='mt-6'>
+        <View>
+          <Container title='Rank' value='123' variant='small' />
+        </View>
+      </View>
     </View>
   );
 };
