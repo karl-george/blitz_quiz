@@ -8,6 +8,7 @@ const Page = () => {
   const users = tempUsers;
 
   //Todo: Sort users by score, highest first
+  // Todo: If user isn't in top 15, show them as the last row
 
   return (
     <View className='flex-1 px-4'>
@@ -27,7 +28,10 @@ const Page = () => {
               resizeMode='cover'
             />
             <View className='p-2 mt-2 border-2 border-border_light bg-light_bg rounded-xl'>
-              <Text className='text-center text-white' numberOfLines={1}>
+              <Text
+                className='font-bold text-center text-white'
+                numberOfLines={1}
+              >
                 {users[0].user_name}
               </Text>
               <Text
@@ -47,7 +51,10 @@ const Page = () => {
               resizeMode='cover'
             />
             <View className='p-2 mt-2 border-2 border-border_light bg-light_bg rounded-xl'>
-              <Text className='text-center text-white' numberOfLines={1}>
+              <Text
+                className='font-bold text-center text-white'
+                numberOfLines={1}
+              >
                 {users[1].user_name}
               </Text>
               <Text
@@ -67,7 +74,10 @@ const Page = () => {
               resizeMode='cover'
             />
             <View className='p-2 mt-2 border-2 border-border_light bg-light_bg rounded-xl'>
-              <Text className='text-center text-white' numberOfLines={1}>
+              <Text
+                className='font-bold text-center text-white'
+                numberOfLines={1}
+              >
                 {users[2].user_name}
               </Text>
               <Text
