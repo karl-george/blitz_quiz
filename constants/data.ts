@@ -125,3 +125,26 @@ export const tempUsers = [
     avatar: '@/assets/images/icon.png',
   },
 ];
+
+export const tempBookmarks = [
+  {
+    id: 1,
+    question: 'Who is the Dragon Reborn?',
+    option_1: "Rand Al'Thor",
+    option_2: "Egwene Al'Vere",
+    option_3: 'Matt Cauthon',
+    option_4: 'Perrin Aybara',
+    answer: "Rand Al'Thor",
+    category: 'Movies',
+  },
+  {
+    id: 2,
+    question: 'Who killed Asmodean?',
+    option_1: "Rand Al'Thor",
+    option_2: 'Lanfear',
+    option_3: 'Sammael',
+    option_4: 'Moghedian',
+    answer: 'Moghedian',
+    category: 'Movies',
+  },
+];
