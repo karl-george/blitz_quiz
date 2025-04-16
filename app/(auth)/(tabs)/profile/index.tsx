@@ -2,6 +2,7 @@ import Button from '@/components/Button';
 import Container from '@/components/Container';
 import { useClerk, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -13,7 +14,23 @@ const Profile = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
 
-  //TODO: Handle changing avatar
+  const handleAvatarChange = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: false,
+      aspect: [4, 4],
+      quality: 1,
+      base64: true,
+    });
+
+    if (!result.canceled && result.assets[0].base64) {
+      const base64 = result.assets[0].base64;
+      const mimeType = result.assets[0].mimeType;
+      const image = `data:${mimeType};base64,${base64}`;
+
+      user?.setProfileImage({ file: image });
+    }
+  };
 
   const handleNameChange = () => {
     // Set/Update username
@@ -37,7 +54,7 @@ const Profile = () => {
             src={user?.imageUrl}
             className='absolute self-center border-2 -top-8 rounded-xl w-28 h-28 border-border_light'
           />
-          <TouchableOpacity className='mt-24'>
+          <TouchableOpacity className='mt-24' onPress={handleAvatarChange}>
             <Text className='text-xl text-center text-white'>
               Change Avatar
             </Text>
