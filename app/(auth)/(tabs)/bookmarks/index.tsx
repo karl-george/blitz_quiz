@@ -1,19 +1,11 @@
-import Button from '@/components/Button';
-import Question from '@/components/Question';
+import Bookmark from '@/components/Bookmark';
 import { tempBookmarks } from '@/constants/data';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import React from 'react';
+import { FlatList, View } from 'react-native';
 
 const Page = () => {
-  const [extended, setExtended] = useState(false);
-
   const bookmarks = tempBookmarks;
-
-  const handlePress = (e) => {
-    console.log(e);
-    setExtended((prevState) => !prevState);
-  };
 
   return (
     <View className='flex-1 px-4'>
@@ -27,12 +19,10 @@ const Page = () => {
           data={bookmarks}
           contentContainerClassName='gap-4'
           renderItem={({ item }) => (
-            <Question
+            <Bookmark
               question={item.question}
               answer={item.answer}
               variant='fullWidth'
-              onPress={(e) => handlePress(e)}
-              extended={extended}
             />
           )}
           keyExtractor={(item) => item.id.toString()}
