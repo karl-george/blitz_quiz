@@ -1,26 +1,32 @@
 export const categories = [
   {
     title: 'Animals',
+    slug: 'animals',
     icon: '🦍',
   },
   {
     title: 'Movies',
+    slug: 'movies',
     icon: '🎥',
   },
   {
     title: 'Music',
+    slug: 'music',
     icon: '🎧',
   },
   {
     title: 'Science',
+    slug: 'science',
     icon: '🥼',
   },
   {
     title: 'Sport',
+    slug: 'sport',
     icon: '⚽',
   },
   {
     title: 'Video Games',
+    slug: 'video-games',
     icon: '🕹️',
   },
 ];
