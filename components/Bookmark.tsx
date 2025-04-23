@@ -1,12 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, Text } from 'react-native';
 
-interface QuestionProps {
+interface BookmarkProps {
   question: string;
   answer: string;
-  onPress?: () => void;
   variant: 'fullWidth';
-  extended: boolean;
 }
 
 const styles = {
@@ -15,16 +13,16 @@ const styles = {
   },
 };
 
-const Question = ({
-  question,
-  answer,
-  onPress,
-  variant,
-  extended,
-}: QuestionProps) => {
+const Bookmark = ({ question, answer, variant }: BookmarkProps) => {
+  const [extended, setExtended] = useState(false);
+
+  const handlePress = () => {
+    setExtended((prevState) => !prevState);
+  };
+
   return (
     <Pressable
-      onPress={onPress}
+      onPress={handlePress}
       className={`items-center ${styles[variant].width} text-center border-2 border-border_light bg-light_bg rounded-xl justify-center py-6`}
     >
       <Text className={`text-xl font-semibold  text-white`}>{question}</Text>
@@ -37,4 +35,4 @@ const Question = ({
   );
 };
 
-export default Question;
+export default Bookmark;
