@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import ProgressBar from 'react-native-progress/Bar';
 
 const Page = () => {
@@ -11,6 +11,9 @@ const Page = () => {
   const [timeLeft, setTimeLeft] = useState(10);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
+  const [chosenAnswer, setChosenAnswer] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [showAnswer, setShowAnswer] = useState(false);
 
   const { cat } = useLocalSearchParams();
 
@@ -18,20 +21,23 @@ const Page = () => {
   const questions = questionsList[0][cat][questionIndex];
 
   const handlePress = (option: string) => {
+    setChosenAnswer(option);
+    setAnswer(questions.answer);
+    setShowAnswer(true);
     if (option == questions.answer) {
-      Alert.alert('Correct');
+      // Alert.alert('Correct');
       //Todo: Increase Score
       setScore(score + 50);
 
       if (questionIndex < Object.keys(questionsList[0][cat]).length) {
         //Todo: Set time back to 10
         //Todo: Increment questionIndex
-        setQuestionIndex(questions + 1);
+        // setQuestionIndex(questions + 1);
       } else {
         //Todo: Quiz over send to game-over screen with stats
       }
     } else {
-      Alert.alert('Wrong');
+      // Alert.alert('Wrong');
     }
   };
 
@@ -106,7 +112,9 @@ const Page = () => {
           <TouchableOpacity
             key={option}
             onPress={() => handlePress(option)}
-            className='items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl'
+            className={`
+            ${showAnswer ? (option === answer ? 'bg-correct' : 'bg-wrong') : ''}
+             items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
           >
             <Text className='text-xl text-center text-white'>{option}</Text>
           </TouchableOpacity>
