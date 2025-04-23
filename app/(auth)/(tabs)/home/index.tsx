@@ -4,9 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useUser } from '@clerk/clerk-expo';
 import Button from '@/components/Button';
 import { categories } from '@/constants/data';
+import { useRouter } from 'expo-router';
 
 const Page = () => {
   const { user } = useUser();
+  const router = useRouter();
 
   return (
     <View className='flex-1 px-4 pt-6'>
@@ -35,6 +37,7 @@ const Page = () => {
               title={category.title}
               icon={category.icon}
               variant={'large'}
+              onPress={() => router.push(`/(auth)/quiz/${category.slug}`)}
             />
           ))}
         </View>
