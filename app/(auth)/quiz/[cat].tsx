@@ -2,13 +2,15 @@ import { tempQuestions } from '@/constants/data';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import ProgressBar from 'react-native-progress/Bar';
 
 const Page = () => {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
   const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
 
   const { cat } = useLocalSearchParams();
 
@@ -19,6 +21,7 @@ const Page = () => {
     if (option == questions.answer) {
       Alert.alert('Correct');
       //Todo: Increase Score
+      setScore(score + 50);
 
       if (questionIndex < Object.keys(questionsList[0][cat]).length) {
         //Todo: Set time back to 10
@@ -31,6 +34,21 @@ const Page = () => {
       Alert.alert('Wrong');
     }
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 0) {
+          clearInterval(interval);
+          // todo: if not last question move on, otherwise game over
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <View className='flex-1 px-4'>
@@ -68,9 +86,17 @@ const Page = () => {
       </View>
 
       {/* Timer */}
-      <View className='flex-row items-center justify-center mt-4'>
+      <View className='flex-row items-center justify-center gap-4 mt-4'>
         <Ionicons name='time-outline' size={20} color='#fff' />
-        <View className='flex-1 p-1 mx-4 border-2 border-border_light rounded-2xl' />
+        <ProgressBar
+          progress={timeLeft / 10}
+          color='#C0B5F8'
+          borderwidth={1}
+          borderColor='#D7D2F2'
+          width={280}
+          height={10}
+          borderRadius={20}
+        />
         <Text className='text-xl text-center text-white'>{timeLeft}</Text>
       </View>
 
