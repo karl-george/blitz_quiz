@@ -5,7 +5,7 @@ const Layout = () => {
   return (
     <Stack>
       <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-      <Stack.Screen name='quiz' />
+      <Stack.Screen name='quiz' options={{ headerShown: false }} />
     </Stack>
   );
 };
