@@ -154,3 +154,27 @@ export const tempBookmarks = [
     category: 'Movies',
   },
 ];
+
+export const tempQuestions = [
+  {
+    movies: {
+      0: {
+        question: 'Who is the Dragon Reborn?',
+        options: [
+          "Rand Al'Thor",
+          "Egwene Al'Vere",
+          'Matt Cauthon',
+          'Perrin Aybara',
+        ],
+        answer: "Rand Al'Thor",
+      },
+      1: {
+        question: 'Who killed Asmodean?',
+        options: ["Rand Al'Thor", 'Lanfear', 'Sammael', 'Moghedian'],
+        answer: 'Moghedian',
+      },
+    },
+    sports: {},
+    science: {},
+  },
+];
