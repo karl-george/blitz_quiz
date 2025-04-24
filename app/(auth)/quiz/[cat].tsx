@@ -1,4 +1,5 @@
-import { tempQuestions } from '@/constants/data';
+import { supabase } from '@/lib/supabase';
+import { Question } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams } from 'expo-router';
@@ -12,24 +13,31 @@ const Page = () => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [chosenAnswer, setChosenAnswer] = useState('');
-  const [answer, setAnswer] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>([]);
 
   const { cat } = useLocalSearchParams();
 
-  const questionsList = tempQuestions;
-  const questions = questionsList[0][cat][questionIndex];
+  useEffect(() => {
+    supabase
+      .from('questions')
+      .select('*')
+      .then(({ data, error }) => {
+        setQuestions(data ?? []);
+      });
+  }, []);
 
   const handlePress = (option: string) => {
     setChosenAnswer(option);
-    setAnswer(questions.answer);
-    setShowAnswer(true);
-    if (option == questions.answer) {
+    console.log(option);
+    console.log(questions[questionIndex].correct_option);
+    if (option == questions[questionIndex].correct_option) {
+      revealAnswer();
       // Alert.alert('Correct');
       //Todo: Increase Score
       setScore(score + 50);
 
-      if (questionIndex < Object.keys(questionsList[0][cat]).length) {
+      if (questionIndex < questions.length) {
         //Todo: Set time back to 10
         //Todo: Increment questionIndex
         // setQuestionIndex(questions + 1);
@@ -37,8 +45,26 @@ const Page = () => {
         //Todo: Quiz over send to game-over screen with stats
       }
     } else {
+      revealAnswer();
       // Alert.alert('Wrong');
     }
+  };
+
+  const revealAnswer = () => {
+    const timer = 3;
+    setShowAnswer(true);
+
+    const reveal = setInterval(() => {
+      if (timer <= 0) {
+        setShowAnswer(false);
+        clearInterval(reveal);
+        // todo: if not last question move on, otherwise game over
+        return 0;
+      }
+      return timer - 1;
+    }, 1000);
+
+    return () => clearInterval(reveal);
   };
 
   useEffect(() => {
@@ -46,6 +72,7 @@ const Page = () => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 0) {
           clearInterval(interval);
+          setShowAnswer(true);
           // todo: if not last question move on, otherwise game over
           return 0;
         }
@@ -86,7 +113,7 @@ const Page = () => {
       <View className='mt-4 border-2 border-border_light bg-light_bg rounded-2xl'>
         <View className='items-center justify-center p-4 h-72'>
           <Text className='text-2xl text-center text-white'>
-            {questions?.question}
+            {questions[questionIndex]?.question_text}
           </Text>
         </View>
       </View>
@@ -108,17 +135,78 @@ const Page = () => {
 
       {/* Answers */}
       <View className='gap-6 mt-16'>
-        {questions['options'].map((option: string) => (
-          <TouchableOpacity
-            key={option}
-            onPress={() => handlePress(option)}
-            className={`
-            ${showAnswer ? (option === answer ? 'bg-correct' : 'bg-wrong') : ''}
-             items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
-          >
-            <Text className='text-xl text-center text-white'>{option}</Text>
-          </TouchableOpacity>
-        ))}
+        <TouchableOpacity
+          key={questions[questionIndex]?.option_1}
+          onPress={() => handlePress(questions[questionIndex]?.option_1)}
+          className={`
+            ${
+              showAnswer
+                ? questions[questionIndex]?.option_1 ==
+                  questions[questionIndex].correct_option
+                  ? 'bg-correct'
+                  : 'bg-wrong'
+                : ''
+            }
+           items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
+        >
+          <Text className='text-xl text-center text-white'>
+            {questions[questionIndex]?.option_1}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          key={questions[questionIndex]?.option_2}
+          onPress={() => handlePress(questions[questionIndex]?.option_2)}
+          className={`
+          ${
+            showAnswer
+              ? questions[questionIndex]?.option_2 ==
+                questions[questionIndex].correct_option
+                ? 'bg-correct'
+                : 'bg-wrong'
+              : ''
+          }
+           items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
+        >
+          <Text className='text-xl text-center text-white'>
+            {questions[questionIndex]?.option_2}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          key={questions[questionIndex]?.option_3}
+          onPress={() => handlePress(questions[questionIndex]?.option_3)}
+          className={`
+          ${
+            showAnswer
+              ? questions[questionIndex]?.option_3 ==
+                questions[questionIndex].correct_option
+                ? 'bg-correct'
+                : 'bg-wrong'
+              : ''
+          }
+           items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
+        >
+          <Text className='text-xl text-center text-white'>
+            {questions[questionIndex]?.option_3}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          key={questions[questionIndex]?.option_4}
+          onPress={() => handlePress(questions[questionIndex]?.option_4)}
+          className={`
+          ${
+            showAnswer
+              ? questions[questionIndex]?.option_4 ==
+                questions[questionIndex].correct_option
+                ? 'bg-correct'
+                : 'bg-wrong'
+              : ''
+          }
+           items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
+        >
+          <Text className='text-xl text-center text-white'>
+            {questions[questionIndex]?.option_4}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
