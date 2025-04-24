@@ -143,7 +143,7 @@ const Page = () => {
               showAnswer
                 ? questions[questionIndex]?.option_1 ==
                   questions[questionIndex].correct_option
-                  ? 'bg-correct'
+                  ? 'bg-[#1EC751]'
                   : 'bg-wrong'
                 : ''
             }
@@ -161,7 +161,7 @@ const Page = () => {
             showAnswer
               ? questions[questionIndex]?.option_2 ==
                 questions[questionIndex].correct_option
-                ? 'bg-correct'
+                ? 'bg-[#1EC751]'
                 : 'bg-wrong'
               : ''
           }
@@ -179,7 +179,7 @@ const Page = () => {
             showAnswer
               ? questions[questionIndex]?.option_3 ==
                 questions[questionIndex].correct_option
-                ? 'bg-correct'
+                ? 'bg-[#1EC751]'
                 : 'bg-wrong'
               : ''
           }
@@ -197,7 +197,7 @@ const Page = () => {
             showAnswer
               ? questions[questionIndex]?.option_4 ==
                 questions[questionIndex].correct_option
-                ? 'bg-correct'
+                ? 'bg-[#1EC751]'
                 : 'bg-wrong'
               : ''
           }
