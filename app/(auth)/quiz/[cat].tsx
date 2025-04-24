@@ -2,78 +2,71 @@ import { supabase } from '@/lib/supabase';
 import { Question } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import ProgressBar from 'react-native-progress/Bar';
 
 const Page = () => {
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(10);
-  const [gameOver, setGameOver] = useState(false);
-  const [score, setScore] = useState(0);
-  const [chosenAnswer, setChosenAnswer] = useState('');
-  const [showAnswer, setShowAnswer] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(10);
+  const [score, setScore] = useState(0);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState(0);
 
   const { cat } = useLocalSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     supabase
       .from('questions')
-      .select('*')
+      .select(
+        `
+      *,
+      categories (
+        category_name
+      )
+    `
+      )
+      .eq('categories.category_name', cat)
       .then(({ data, error }) => {
         setQuestions(data ?? []);
       });
   }, []);
 
   const handlePress = (option: string) => {
-    setChosenAnswer(option);
-    console.log(option);
-    console.log(questions[questionIndex].correct_option);
+    // Correct answer
     if (option == questions[questionIndex].correct_option) {
-      revealAnswer();
-      // Alert.alert('Correct');
-      //Todo: Increase Score
-      setScore(score + 50);
-
-      if (questionIndex < questions.length) {
-        //Todo: Set time back to 10
-        //Todo: Increment questionIndex
-        // setQuestionIndex(questions + 1);
-      } else {
-        //Todo: Quiz over send to game-over screen with stats
-      }
+      setScore((prev) => prev + 50);
+      setCorrectAnswers((prev) => prev + 1);
     } else {
-      revealAnswer();
-      // Alert.alert('Wrong');
+      setWrongAnswers((prev) => prev + 1);
     }
+
+    setShowAnswer(true);
   };
 
-  const revealAnswer = () => {
-    const timer = 3;
-    setShowAnswer(true);
-
-    const reveal = setInterval(() => {
-      if (timer <= 0) {
-        setShowAnswer(false);
-        clearInterval(reveal);
-        // todo: if not last question move on, otherwise game over
-        return 0;
-      }
-      return timer - 1;
-    }, 1000);
-
-    return () => clearInterval(reveal);
+  const handleGameOver = () => {
+    // Add score to users total_score
+    // Update users latest_score
+    // Update users number of games played
+    // Update users number of correct answers
+    // update users number of wrong answers
+    // Push user to game over screen
+    //! router.push('/quiz/game-over');
   };
 
   useEffect(() => {
+    setTimeLeft(10);
+    setShowAnswer(false);
+
     const interval = setInterval(() => {
       setTimeLeft((prevTime) => {
-        if (prevTime <= 0) {
-          clearInterval(interval);
+        if (prevTime <= 1) {
           setShowAnswer(true);
-          // todo: if not last question move on, otherwise game over
+          clearInterval(interval);
           return 0;
         }
         return prevTime - 1;
@@ -81,7 +74,21 @@ const Page = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [questionIndex]);
+
+  useEffect(() => {
+    if (showAnswer) {
+      const timeout = setTimeout(() => {
+        if (questionIndex < questions.length - 1) {
+          setQuestionIndex((prev) => prev + 1);
+        } else {
+          handleGameOver();
+        }
+      }, 2000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [showAnswer]);
 
   return (
     <View className='flex-1 px-4'>
@@ -106,7 +113,9 @@ const Page = () => {
 
       {/* Questions left */}
       <View className='pt-2'>
-        <Text className='text-base text-center text-white'>Question 1/10</Text>
+        <Text className='text-base text-center text-white'>
+          Question {questionIndex}/10
+        </Text>
       </View>
 
       {/* Question Box */}
@@ -142,7 +151,7 @@ const Page = () => {
             ${
               showAnswer
                 ? questions[questionIndex]?.option_1 ==
-                  questions[questionIndex].correct_option
+                  questions[questionIndex]?.correct_option
                   ? 'bg-[#1EC751]'
                   : 'bg-wrong'
                 : ''
@@ -160,7 +169,7 @@ const Page = () => {
           ${
             showAnswer
               ? questions[questionIndex]?.option_2 ==
-                questions[questionIndex].correct_option
+                questions[questionIndex]?.correct_option
                 ? 'bg-[#1EC751]'
                 : 'bg-wrong'
               : ''
@@ -178,7 +187,7 @@ const Page = () => {
           ${
             showAnswer
               ? questions[questionIndex]?.option_3 ==
-                questions[questionIndex].correct_option
+                questions[questionIndex]?.correct_option
                 ? 'bg-[#1EC751]'
                 : 'bg-wrong'
               : ''
@@ -196,7 +205,7 @@ const Page = () => {
           ${
             showAnswer
               ? questions[questionIndex]?.option_4 ==
-                questions[questionIndex].correct_option
+                questions[questionIndex]?.correct_option
                 ? 'bg-[#1EC751]'
                 : 'bg-wrong'
               : ''
