@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
-import { Question } from '@/types';
+import { Question, User } from '@/types';
+import { useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -15,29 +16,32 @@ const Page = () => {
   const [score, setScore] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
+  const [userDetails, setUserDetails] = useState<User>();
 
   const { cat } = useLocalSearchParams();
+  const { user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
     supabase
       .from('questions')
-      .select(
-        `
-      *,
-      categories (
-        category_name
-      )
-    `
-      )
+      .select(`*, categories (category_name)`)
       .eq('categories.category_name', cat)
       .then(({ data, error }) => {
         setQuestions(data ?? []);
       });
+
+    supabase
+      .from('users')
+      .select(`*`)
+      .eq('clerk_id', user?.id)
+      .single()
+      .then(({ data, error }) => {
+        setUserDetails(data ?? {});
+      });
   }, []);
 
   const handlePress = (option: string) => {
-    // Correct answer
     if (option == questions[questionIndex].correct_option) {
       setScore((prev) => prev + 50);
       setCorrectAnswers((prev) => prev + 1);
@@ -48,14 +52,23 @@ const Page = () => {
     setShowAnswer(true);
   };
 
-  const handleGameOver = () => {
-    // Add score to users total_score
-    // Update users latest_score
-    // Update users number of games played
-    // Update users number of correct answers
-    // update users number of wrong answers
-    // Push user to game over screen
-    //! router.push('/quiz/game-over');
+  const handleGameOver = async () => {
+    const { error } = await supabase
+      .from('users')
+      .update({
+        total_score: userDetails?.total_score + score,
+        latest_score: score,
+        games_played: userDetails?.games_played + 1,
+        correct_answers: userDetails?.correct_answers + correctAnswers,
+        wrong_answers: userDetails?.wrong_answers + wrongAnswers,
+        updated_at: new Date(),
+      })
+      .eq('clerk_id', user?.id);
+
+    setCorrectAnswers(0);
+    setWrongAnswers(0);
+    setScore(0);
+    router.replace('/quiz/game-over');
   };
 
   useEffect(() => {
