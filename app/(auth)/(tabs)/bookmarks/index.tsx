@@ -1,8 +1,7 @@
 import Bookmark from '@/components/Bookmark';
 import Header from '@/components/Header';
-import { tempBookmarks } from '@/constants/data';
 import { supabase } from '@/lib/supabase';
-import { User } from '@/types';
+import { Bookmark as Bookmarks, Question, User } from '@/types';
 import { useUser } from '@clerk/clerk-expo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack } from 'expo-router';
@@ -10,8 +9,8 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
 
 const Page = () => {
-  const bookmarks = tempBookmarks;
-
+  const [bookmarks, setBookmarks] = useState<Bookmarks[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [userData, setUserData] = useState<User>();
   const { user } = useUser();
 
@@ -22,7 +21,30 @@ const Page = () => {
       .eq('clerk_id', user?.id)
       .single()
       .then(({ data, error }) => {
+        if (error) console.error(error);
         setUserData(data ?? {});
+      });
+
+    supabase
+      .from('bookmarks')
+      .select(`*`)
+      .eq('clerk_id', user?.id)
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        setBookmarks(data ?? []);
+      });
+
+    supabase
+      .from('questions')
+      .select('*')
+      .in(
+        'question_id',
+        bookmarks.map((b) => b.question_id)
+      )
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        setQuestions(data ?? []);
       });
   }, []);
 
@@ -40,16 +62,16 @@ const Page = () => {
       {/* Show bookmarked questions */}
       <View className='pt-8'>
         <FlatList
-          data={bookmarks}
+          data={questions}
           contentContainerClassName='gap-4'
           renderItem={({ item }) => (
             <Bookmark
-              question={item.question}
-              answer={item.answer}
+              question={item.question_text}
+              answer={item.correct_option}
               variant='fullWidth'
             />
           )}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.question_id.toString()}
           showsVerticalScrollIndicator={false}
         />
       </View>
