@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { Question, User } from '@/types';
+import { Bookmark, Question, User } from '@/types';
 import { useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,6 +17,7 @@ const Page = () => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
   const [userDetails, setUserDetails] = useState<User>();
+  const [bookmarked, setBookmarked] = useState<Bookmark[]>([]);
 
   const { cat } = useLocalSearchParams();
   const { user } = useUser();
@@ -40,6 +41,16 @@ const Page = () => {
         setUserDetails(data ?? {});
       });
   }, []);
+
+  useEffect(() => {
+    supabase
+      .from('bookmarks')
+      .select(`*`)
+      .eq('clerk_id', user?.id)
+      .then(({ data, error }) => {
+        setBookmarked(data ?? []);
+      });
+  }, [bookmarked]);
 
   const handlePress = (option: string) => {
     if (option == questions[questionIndex].correct_option) {
@@ -103,6 +114,14 @@ const Page = () => {
     }
   }, [showAnswer]);
 
+  const addQuestionToBookmark = async () => {
+    await supabase.from('bookmarks').insert({
+      question_id: questions[questionIndex].question_id,
+      clerk_id: user?.id,
+      created_at: new Date(),
+    });
+  };
+
   return (
     <View className='flex-1 px-4'>
       <LinearGradient
@@ -117,8 +136,20 @@ const Page = () => {
           headerStyle: { backgroundColor: '#CCB6FF' },
           headerShadowVisible: false,
           headerRight: () => (
-            <TouchableOpacity onPress={() => {}}>
-              <Ionicons name='bookmark-outline' size={24} color='#fff' />
+            <TouchableOpacity onPress={addQuestionToBookmark}>
+              <Ionicons
+                name={
+                  bookmarked.some(
+                    (question) =>
+                      question.question_id ===
+                      questions[questionIndex].question_id
+                  )
+                    ? 'bookmark'
+                    : 'bookmark-outline'
+                }
+                size={24}
+                color='#fff'
+              />
             </TouchableOpacity>
           ),
         }}
