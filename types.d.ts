@@ -24,3 +24,10 @@ export interface User {
   updated_at: string;
   last_login: string;
 }
+
+export interface Bookmark {
+  id: int;
+  clerk_id: string;
+  question_id: int;
+  created_at: string;
+}
