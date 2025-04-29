@@ -10,3 +10,17 @@ export interface Question {
   created_at: string;
   updated_at: string;
 }
+
+export interface User {
+  id: int;
+  clerk_id: string;
+  username: string;
+  total_score: int;
+  latest_score: int;
+  correct_answers: int;
+  wrong_answers: int;
+  games_played: int;
+  created_at: string;
+  updated_at: string;
+  last_login: string;
+}
