@@ -24,7 +24,9 @@ const Page = () => {
         if (error) console.error(error);
         setUserData(data ?? {});
       });
+  }, []);
 
+  useEffect(() => {
     supabase
       .from('bookmarks')
       .select(`*`)
@@ -46,7 +48,11 @@ const Page = () => {
         if (error) console.error(error);
         setQuestions(data ?? []);
       });
-  }, []);
+  }, [bookmarks]);
+
+  const handleDelete = async (questionId: number) => {
+    await supabase.from('bookmarks').delete().eq('question_id', questionId);
+  };
 
   return (
     <View className='flex-1 px-4'>
@@ -68,7 +74,7 @@ const Page = () => {
             <Bookmark
               question={item.question_text}
               answer={item.correct_option}
-              variant='fullWidth'
+              handleDelete={() => handleDelete(item.question_id)}
             />
           )}
           keyExtractor={(item) => item.question_id.toString()}
