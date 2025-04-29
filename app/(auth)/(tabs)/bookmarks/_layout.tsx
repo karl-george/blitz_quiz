@@ -6,7 +6,13 @@ import Header from '@/components/Header';
 const Layout = () => {
   return (
     <Stack>
-      <Stack.Screen name='index' options={{ header: () => <Header /> }} />
+      <Stack.Screen
+        name='index'
+        options={{
+          headerStyle: { backgroundColor: '#CCB6FF' },
+          headerShadowVisible: false,
+        }}
+      />
     </Stack>
   );
 };
