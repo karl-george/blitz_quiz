@@ -1,4 +1,5 @@
-import { useSSO } from '@clerk/clerk-expo';
+import { supabase } from '@/lib/supabase';
+import { useSSO, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -19,8 +20,25 @@ export const useWarmUpBrowser = () => {
 // Handle any pending authentication sessions
 WebBrowser.maybeCompleteAuthSession();
 
-export default function Index() {
+const Index = () => {
+  const { user } = useUser();
+
   useWarmUpBrowser();
+
+  const addToDB = async () => {
+    await supabase.from('users').insert({
+      clerk_id: user?.id,
+      username: user?.fullName,
+      total_score: 0,
+      latest_score: 0,
+      games_played: 0,
+      correct_answers: 0,
+      wrong_answers: 0,
+      created_at: new Date(),
+      updated_at: new Date(),
+      last_login: new Date(),
+    });
+  };
 
   // Use the useSSO hook to access the startSSOFlow() method
   const { startSSOFlow } = useSSO();
@@ -39,6 +57,7 @@ export default function Index() {
       // If sign in was successful, set the active session
       if (createdSessionId) {
         setActive!({ session: createdSessionId });
+        addToDB();
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
@@ -59,6 +78,7 @@ export default function Index() {
       // If sign in was successful, set the active session
       if (createdSessionId) {
         setActive!({ session: createdSessionId });
+        addToDB();
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
@@ -83,4 +103,6 @@ export default function Index() {
       </TouchableOpacity>
     </View>
   );
-}
+};
+
+export default Index;
