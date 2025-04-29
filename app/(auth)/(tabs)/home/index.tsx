@@ -1,20 +1,40 @@
-import { View, Text, Image } from 'react-native';
-import React from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useUser } from '@clerk/clerk-expo';
 import Button from '@/components/Button';
+import Header from '@/components/Header';
 import { categories } from '@/constants/data';
-import { useRouter } from 'expo-router';
+import { supabase } from '@/lib/supabase';
+import { User } from '@/types';
+import { useUser } from '@clerk/clerk-expo';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Stack, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Image, Text, View } from 'react-native';
 
 const Page = () => {
   const { user } = useUser();
   const router = useRouter();
+  const [userData, setUserData] = useState<User>();
+
+  useEffect(() => {
+    supabase
+      .from('users')
+      .select(`*`)
+      .eq('clerk_id', user?.id)
+      .single()
+      .then(({ data, error }) => {
+        setUserData(data ?? {});
+      });
+  }, []);
 
   return (
     <View className='flex-1 px-4 pt-6'>
       <LinearGradient
         colors={['#CCB6FF', '#986BFF']}
         className='absolute top-0 bottom-0 left-0 right-0'
+      />
+      <Stack.Screen
+        options={{
+          header: () => <Header userData={userData!} />,
+        }}
       />
       {/* Hero */}
       <View className='flex-row w-full p-4 border-2 border-border_light bg-light_bg rounded-2xl'>

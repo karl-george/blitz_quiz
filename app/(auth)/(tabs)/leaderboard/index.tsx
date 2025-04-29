@@ -1,20 +1,44 @@
+import Header from '@/components/Header';
 import LeaderboardCard from '@/components/LeaderboardCard';
 import { tempUsers } from '@/constants/data';
+import { supabase } from '@/lib/supabase';
+import { User } from '@/types';
+import { useUser } from '@clerk/clerk-expo';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import { Stack } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { FlatList, Image, Text, View } from 'react-native';
 
 const Page = () => {
   const users = tempUsers;
+  const { user } = useUser();
 
   //Todo: Sort users by score, highest first
   // Todo: If user isn't in top 15, show them as the last row
+
+  const [userData, setUserData] = useState<User>();
+
+  useEffect(() => {
+    supabase
+      .from('users')
+      .select(`*`)
+      .eq('clerk_id', user?.id)
+      .single()
+      .then(({ data, error }) => {
+        setUserData(data ?? {});
+      });
+  }, []);
 
   return (
     <View className='flex-1 px-4'>
       <LinearGradient
         colors={['#CCB6FF', '#986BFF']}
         className='absolute top-0 bottom-0 left-0 right-0'
+      />
+      <Stack.Screen
+        options={{
+          header: () => <Header userData={userData!} />,
+        }}
       />
       {/* Top 3 */}
       <View className='pt-6 mb-12'>
