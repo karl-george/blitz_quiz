@@ -1,18 +1,32 @@
 import Button from '@/components/Button';
 import Container from '@/components/Container';
+import { supabase } from '@/lib/supabase';
+import { User } from '@/types';
 import { useClerk, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const Profile = () => {
   const [editable, setEditable] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
+  const [userData, setUserData] = useState<User>();
 
   const { user } = useUser();
   const { signOut } = useClerk();
+
+  useEffect(() => {
+    supabase
+      .from('users')
+      .select(`*`)
+      .eq('clerk_id', user?.id)
+      .single()
+      .then(({ data, error }) => {
+        setUserData(data ?? {});
+      });
+  }, []);
 
   const handleAvatarChange = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -35,6 +49,7 @@ const Profile = () => {
   const handleNameChange = () => {
     // Set/Update username
     // Use validation to tell the user they can only use letters, numbers and '_' or '-'
+    //todo: User DB username and get zod to validate the entry
     //! Maybe store a name in the database and change that one so I can have more control of whats allowed
     user?.update({ username: name });
 
@@ -74,7 +89,7 @@ const Profile = () => {
                 </View>
               ) : (
                 <Text className='ml-2 text-xl text-white'>
-                  {user?.username ? user.username : user?.fullName}
+                  {userData?.username}
                 </Text>
               )}
               {!editable ? (
@@ -106,9 +121,21 @@ const Profile = () => {
           <Container title='Rank' value='123' variant='small' />
         </View>
         <View className='flex-row justify-between mt-2'>
-          <Container title='Correct Answers' value='80' variant='small' />
-          <Container title='Wrong Answers' value='12' variant='small' />
-          <Container title='Games Played' value='80' variant='small' />
+          <Container
+            title='Correct Answers'
+            value={userData?.correct_answers}
+            variant='small'
+          />
+          <Container
+            title='Wrong Answers'
+            value={userData?.wrong_answers}
+            variant='small'
+          />
+          <Container
+            title='Games Played'
+            value={userData?.games_played}
+            variant='small'
+          />
         </View>
       </View>
 
