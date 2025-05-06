@@ -1,21 +1,28 @@
+import { useUser } from '@clerk/clerk-expo';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Image, Text, View } from 'react-native';
+
+interface LeaderboardCardProps {
+  name: string;
+  rank: number;
+  score: number;
+  avatar?: string;
+}
 
 const LeaderboardCard = ({
   name,
   rank,
   score,
   avatar,
-}: {
-  name: string;
-  rank: number;
-  score: number;
-  avatar: string;
-}) => {
+}: LeaderboardCardProps) => {
+  const { user } = useUser();
+
   return (
     <View
-      className={`border-2  border-border_light bg-light_bg rounded-xl p-4`}
+      className={`${
+        user?.username === name ? 'bg-correct' : 'bg-light_bg'
+      } border-2 border-border_light  rounded-xl p-4`}
     >
       <View className='flex-row items-center gap-3'>
         <Text className='text-xl font-bold text-white'>{rank}</Text>
