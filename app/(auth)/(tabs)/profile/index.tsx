@@ -13,20 +13,55 @@ const Profile = () => {
   const [editable, setEditable] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [userData, setUserData] = useState<User>();
+  const [players, setPlayers] = useState<User[]>();
+  const [rank, setRank] = useState(0);
 
   const { user } = useUser();
   const { signOut } = useClerk();
 
   useEffect(() => {
-    supabase
-      .from('users')
-      .select(`*`)
-      .eq('clerk_id', user?.id)
-      .single()
-      .then(({ data, error }) => {
-        setUserData(data ?? {});
-      });
+    const fetchData = async () => {
+      try {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select(`*`)
+          .eq('clerk_id', user?.id)
+          .single();
+
+        if (userError) {
+          console.error(userError);
+          return;
+        }
+
+        setUserData(userData ?? {});
+
+        const { data: playerData, error: playerError } = await supabase
+          .from('users')
+          .select(`*`)
+          .limit(20)
+          .order('total_score', { ascending: false });
+
+        if (playerError) {
+          console.error(playerError);
+          return;
+        }
+
+        setPlayers(playerData ?? []);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+    findPlayerRank();
   }, []);
+
+  const findPlayerRank = () => {
+    const playerRank =
+      players?.findIndex((player) => player.username === userData?.username)! +
+      1;
+    setRank(playerRank);
+  };
 
   const handleAvatarChange = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -118,7 +153,7 @@ const Profile = () => {
       {/* User Game Info Section */}
       <View className='mt-8'>
         <View className='self-center'>
-          <Container title='Rank' value='123' variant='small' />
+          <Container title='Rank' value={rank} variant='small' />
         </View>
         <View className='flex-row justify-between mt-2'>
           <Container
