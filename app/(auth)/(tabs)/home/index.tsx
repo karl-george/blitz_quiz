@@ -14,7 +14,7 @@ const Page = () => {
   const router = useRouter();
   const [userData, setUserData] = useState<User>();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('Cant find user');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +41,7 @@ const Page = () => {
           return;
         }
         setUserData(userData ?? {});
-        // setError(''); // Clear error on success
+        setError(''); // Clear error on success
       } catch (error) {
         setError('An error occurred while fetching user data');
         console.error(error);
