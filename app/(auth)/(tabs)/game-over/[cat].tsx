@@ -38,6 +38,7 @@ const Page = () => {
           headerTintColor: '#fff',
           headerStyle: { backgroundColor: '#CCB6FF' },
           headerShadowVisible: false,
+          headerShown: true,
           header: () => <Header userData={userData!} />,
         }}
       />
