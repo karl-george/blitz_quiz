@@ -3,7 +3,7 @@ import React from 'react';
 
 interface ContainerProps {
   title: string;
-  value?: string;
+  value?: number;
   variant: 'large' | 'small';
 }
 
