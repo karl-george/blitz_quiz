@@ -10,10 +10,6 @@ import { FlatList, Image, Text, View } from 'react-native';
 
 const Page = () => {
   const { user } = useUser();
-
-  //Todo: Sort users by score, highest first
-  // Todo: If user isn't in top 15, show them as the last row
-
   const [userData, setUserData] = useState<User>();
   const [players, setPlayers] = useState<User[]>([]);
 
@@ -39,12 +35,14 @@ const Page = () => {
 
   useEffect(() => {
     if (!players.find((player) => player.username === userData?.username)) {
-      const topPlayers = players;
-      topPlayers.pop();
-      topPlayers.push(userData!);
-      setPlayers(topPlayers);
+      setPlayers((prevPlayers) => {
+        const newPlayers = [...prevPlayers];
+        newPlayers.pop();
+        newPlayers.push(userData!);
+        return newPlayers;
+      });
     }
-  }, [players]);
+  }, [userData]);
 
   return (
     <View className='flex-1 px-4'>
