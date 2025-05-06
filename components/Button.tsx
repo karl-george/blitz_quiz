@@ -15,8 +15,8 @@ const styles = {
     height: 'h-[130px]',
   },
   small: {
-    width: 'w-[100px]',
-    height: 'h-[80px]',
+    width: 'px-10',
+    height: 'py-6',
   },
   fullWidth: {
     width: 'w-full',
