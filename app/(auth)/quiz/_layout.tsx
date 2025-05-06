@@ -2,11 +2,7 @@ import { Stack } from 'expo-router';
 import React from 'react';
 
 const Layout = () => {
-  return (
-    <Stack>
-      <Stack.Screen name='game-over' options={{ headerShown: false }} />
-    </Stack>
-  );
+  return <Stack></Stack>;
 };
 
 export default Layout;
