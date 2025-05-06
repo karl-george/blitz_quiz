@@ -18,7 +18,7 @@ const Bookmark = ({ question, answer, handleDelete }: BookmarkProps) => {
   return (
     <Pressable
       onPress={handlePress}
-      className={`items-center w-full text-center border-2 border-border_light bg-light_bg rounded-xl justify-center py-6`}
+      className={`items-center w-full text-center border-2 border-border_light bg-light_bg rounded-xl justify-center py-6 px-4`}
     >
       <Text className={`text-xl font-semibold text-white`}>{question}</Text>
       {extended && (
