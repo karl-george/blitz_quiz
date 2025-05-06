@@ -1,4 +1,3 @@
-import Header from '@/components/Header';
 import { Stack } from 'expo-router';
 import React from 'react';
 
