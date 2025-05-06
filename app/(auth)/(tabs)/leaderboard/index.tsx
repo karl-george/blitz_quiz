@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import LeaderboardCard from '@/components/LeaderboardCard';
-import { tempUsers } from '@/constants/data';
 import { supabase } from '@/lib/supabase';
 import { User } from '@/types';
 import { useUser } from '@clerk/clerk-expo';
@@ -10,13 +9,13 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, Image, Text, View } from 'react-native';
 
 const Page = () => {
-  const users = tempUsers;
   const { user } = useUser();
 
   //Todo: Sort users by score, highest first
   // Todo: If user isn't in top 15, show them as the last row
 
   const [userData, setUserData] = useState<User>();
+  const [players, setPlayers] = useState<User[]>([]);
 
   useEffect(() => {
     supabase
@@ -27,7 +26,25 @@ const Page = () => {
       .then(({ data, error }) => {
         setUserData(data ?? {});
       });
+
+    supabase
+      .from('users')
+      .select(`*`)
+      .limit(20)
+      .order('total_score', { ascending: false })
+      .then(({ data, error }) => {
+        setPlayers(data ?? []);
+      });
   }, []);
+
+  useEffect(() => {
+    if (!players.find((player) => player.username === userData?.username)) {
+      const topPlayers = players;
+      topPlayers.pop();
+      topPlayers.push(userData!);
+      setPlayers(topPlayers);
+    }
+  }, [players]);
 
   return (
     <View className='flex-1 px-4'>
@@ -56,13 +73,13 @@ const Page = () => {
                 className='font-bold text-center text-white'
                 numberOfLines={1}
               >
-                {users[0].user_name}
+                {players[0]?.username}
               </Text>
               <Text
                 className='text-base text-center text-white'
                 numberOfLines={1}
               >
-                💎 {users[0].score}
+                💎 {players[0]?.total_score}
               </Text>
             </View>
           </View>
@@ -79,13 +96,13 @@ const Page = () => {
                 className='font-bold text-center text-white'
                 numberOfLines={1}
               >
-                {users[1].user_name}
+                {players[1]?.username}
               </Text>
               <Text
                 className='text-base text-center text-white'
                 numberOfLines={1}
               >
-                💎 {users[1].score}
+                💎 {players[1]?.total_score}
               </Text>
             </View>
           </View>
@@ -102,13 +119,13 @@ const Page = () => {
                 className='font-bold text-center text-white'
                 numberOfLines={1}
               >
-                {users[2].user_name}
+                {players[2]?.username}
               </Text>
               <Text
                 className='text-base text-center text-white'
                 numberOfLines={1}
               >
-                💎 {users[2].score}
+                💎 {players[2]?.total_score}
               </Text>
             </View>
           </View>
@@ -117,7 +134,7 @@ const Page = () => {
 
       {/* Leaderboard list after top 3 */}
       <FlatList
-        data={users.slice(3)}
+        data={players.slice(3)}
         contentContainerClassName='gap-2 pb-4'
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
@@ -125,9 +142,8 @@ const Page = () => {
           <LeaderboardCard
             key={index}
             rank={index + 4}
-            name={item?.user_name}
-            score={item?.score}
-            avatar={item?.avatar}
+            name={item?.username}
+            score={item?.total_score}
           />
         )}
       />
