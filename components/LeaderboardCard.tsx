@@ -21,7 +21,7 @@ const LeaderboardCard = ({
   return (
     <View
       className={`${
-        user?.username === name ? 'bg-correct' : 'bg-light_bg'
+        user?.fullName === name ? 'bg-correct' : 'bg-light_bg'
       } border-2 border-border_light  rounded-xl p-4`}
     >
       <View className='flex-row items-center gap-3'>
