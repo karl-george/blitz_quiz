@@ -142,6 +142,7 @@ const Page = () => {
             rank={index + 4}
             name={item?.username}
             score={item?.total_score}
+            user={userData!}
           />
         )}
       />

@@ -1,3 +1,4 @@
+import { User } from '@/types';
 import { useUser } from '@clerk/clerk-expo';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -8,6 +9,7 @@ interface LeaderboardCardProps {
   rank: number;
   score: number;
   avatar?: string;
+  user: User;
 }
 
 const LeaderboardCard = ({
@@ -15,13 +17,12 @@ const LeaderboardCard = ({
   rank,
   score,
   avatar,
+  user,
 }: LeaderboardCardProps) => {
-  const { user } = useUser();
-
   return (
     <View
       className={`${
-        user?.fullName === name ? 'bg-correct' : 'bg-light_bg'
+        user?.username === name ? 'bg-correct' : 'bg-light_bg'
       } border-2 border-border_light  rounded-xl p-4`}
     >
       <View className='flex-row items-center gap-3'>
