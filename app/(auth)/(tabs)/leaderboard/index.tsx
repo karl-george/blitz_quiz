@@ -34,7 +34,7 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
-    if (!players.find((player) => player.username === userData?.username)) {
+    if (!players.find((player) => player?.username === userData?.username)) {
       setPlayers((prevPlayers) => {
         const newPlayers = [...prevPlayers];
         newPlayers.pop();
