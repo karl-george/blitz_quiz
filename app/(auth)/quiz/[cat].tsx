@@ -11,7 +11,7 @@ import ProgressBar from 'react-native-progress/Bar';
 const Page = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [questionsAsked, setQuestionsAsked] = useState(0);
+  const [questionsAsked, setQuestionsAsked] = useState(1);
   const [showAnswer, setShowAnswer] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10);
   const [score, setScore] = useState(0);
@@ -25,27 +25,44 @@ const Page = () => {
   const router = useRouter();
 
   useEffect(() => {
-    supabase
-      .from('questions')
-      .select('*, categories (category_name)')
-      .eq('categories.category_name', cat)
-      .then(({ data, error }) => {
-        if (error) {
-          console.error('Error fetching random questions:', error);
+    const fetchData = async () => {
+      try {
+        // Fetch questions
+        const { data: questionsData, error: questionsError } = await supabase
+          .from('questions')
+          .select('*, categories (category_name)')
+          .eq('category_name', cat);
+
+        if (questionsError) {
+          console.error('Error fetching questions:', questionsError);
           return;
         }
-        setQuestions(data ?? []);
-      });
 
-    supabase
-      .from('users')
-      .select(`*`)
-      .eq('clerk_id', user?.id)
-      .single()
-      .then(({ data, error }) => {
-        setUserDetails(data ?? {});
-      });
-  }, []);
+        setQuestions(questionsData ?? []);
+        setQuestionIndex(
+          Math.floor(Math.random() * (questionsData?.length || 1))
+        );
+
+        // Fetch user details
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('clerk_id', user?.id)
+          .single();
+
+        if (userError) {
+          console.error('Error fetching user:', userError);
+          return;
+        }
+
+        setUserDetails(userData ?? {});
+      } catch (err) {
+        console.error('Unexpected error:', err);
+      }
+    };
+
+    fetchData();
+  }, [cat, user?.id]);
 
   useEffect(() => {
     supabase
@@ -61,10 +78,8 @@ const Page = () => {
     if (option == questions[questionIndex]?.correct_option) {
       setScore((prev) => prev + 50);
       setCorrectAnswers((prev) => prev + 1);
-      setQuestionsAsked((prev) => prev + 1);
     } else {
       setWrongAnswers((prev) => prev + 1);
-      setQuestionsAsked((prev) => prev + 1);
     }
 
     setShowAnswer(true);
@@ -119,6 +134,8 @@ const Page = () => {
           setQuestions(newQuestions);
           // Get new question
           setQuestionIndex(Math.floor(Math.random() * newQuestions.length));
+          // Increase questions asked
+          setQuestionsAsked((prev) => prev + 1);
         } else {
           handleGameOver();
         }
