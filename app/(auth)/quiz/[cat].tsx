@@ -11,6 +11,7 @@ import ProgressBar from 'react-native-progress/Bar';
 const Page = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [questionsAsked, setQuestionsAsked] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10);
   const [score, setScore] = useState(0);
@@ -26,9 +27,13 @@ const Page = () => {
   useEffect(() => {
     supabase
       .from('questions')
-      .select(`*, categories (category_name)`)
+      .select('*, categories (category_name)')
       .eq('categories.category_name', cat)
       .then(({ data, error }) => {
+        if (error) {
+          console.error('Error fetching random questions:', error);
+          return;
+        }
         setQuestions(data ?? []);
       });
 
@@ -53,11 +58,13 @@ const Page = () => {
   }, [bookmarked]);
 
   const handlePress = (option: string) => {
-    if (option == questions[questionIndex].correct_option) {
+    if (option == questions[questionIndex]?.correct_option) {
       setScore((prev) => prev + 50);
       setCorrectAnswers((prev) => prev + 1);
+      setQuestionsAsked((prev) => prev + 1);
     } else {
       setWrongAnswers((prev) => prev + 1);
+      setQuestionsAsked((prev) => prev + 1);
     }
 
     setShowAnswer(true);
@@ -78,6 +85,7 @@ const Page = () => {
 
     setCorrectAnswers(0);
     setWrongAnswers(0);
+    setQuestionsAsked(0);
     setScore(0);
     router.replace(`/(auth)/(tabs)/game-over/${cat}`);
   };
@@ -103,8 +111,14 @@ const Page = () => {
   useEffect(() => {
     if (showAnswer) {
       const timeout = setTimeout(() => {
-        if (questionIndex < questions.length - 1) {
-          setQuestionIndex((prev) => prev + 1);
+        // If there are more questions else game over
+        if (questionsAsked < 10) {
+          // Remove question from array
+          const newQuestions = [...questions];
+          newQuestions.splice(questionIndex, 1);
+          setQuestions(newQuestions);
+          // Get new question
+          setQuestionIndex(Math.floor(Math.random() * newQuestions.length));
         } else {
           handleGameOver();
         }
@@ -116,7 +130,7 @@ const Page = () => {
 
   const addQuestionToBookmark = async () => {
     await supabase.from('bookmarks').insert({
-      question_id: questions[questionIndex].question_id,
+      question_id: questions[questionIndex]?.question_id,
       clerk_id: user?.id,
       created_at: new Date(),
     });
@@ -142,7 +156,7 @@ const Page = () => {
                   bookmarked.some(
                     (question) =>
                       question.question_id ===
-                      questions[questionIndex].question_id
+                      questions[questionIndex]?.question_id
                   )
                     ? 'bookmark'
                     : 'bookmark-outline'
@@ -158,7 +172,7 @@ const Page = () => {
       {/* Questions left */}
       <View className='pt-2'>
         <Text className='text-base text-center text-white'>
-          Question {questionIndex}/10
+          Question {questionsAsked + 1}/10
         </Text>
       </View>
 
@@ -196,7 +210,7 @@ const Page = () => {
               showAnswer
                 ? questions[questionIndex]?.option_1 ==
                   questions[questionIndex]?.correct_option
-                  ? 'bg-[#1EC751]'
+                  ? 'bg-correct'
                   : 'bg-wrong'
                 : ''
             }
@@ -214,7 +228,7 @@ const Page = () => {
             showAnswer
               ? questions[questionIndex]?.option_2 ==
                 questions[questionIndex]?.correct_option
-                ? 'bg-[#1EC751]'
+                ? 'bg-correct'
                 : 'bg-wrong'
               : ''
           }
@@ -232,7 +246,7 @@ const Page = () => {
             showAnswer
               ? questions[questionIndex]?.option_3 ==
                 questions[questionIndex]?.correct_option
-                ? 'bg-[#1EC751]'
+                ? 'bg-correct'
                 : 'bg-wrong'
               : ''
           }
@@ -250,7 +264,7 @@ const Page = () => {
             showAnswer
               ? questions[questionIndex]?.option_4 ==
                 questions[questionIndex]?.correct_option
-                ? 'bg-[#1EC751]'
+                ? 'bg-correct'
                 : 'bg-wrong'
               : ''
           }
