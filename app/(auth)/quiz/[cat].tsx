@@ -79,7 +79,7 @@ const Page = () => {
     setCorrectAnswers(0);
     setWrongAnswers(0);
     setScore(0);
-    router.replace('/quiz/game-over');
+    router.replace(`/(auth)/(tabs)/game-over/${cat}`);
   };
 
   useEffect(() => {
