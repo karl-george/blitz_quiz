@@ -14,23 +14,39 @@ const Page = () => {
   const [players, setPlayers] = useState<User[]>([]);
 
   useEffect(() => {
-    supabase
-      .from('users')
-      .select(`*`)
-      .eq('clerk_id', user?.id)
-      .single()
-      .then(({ data, error }) => {
-        setUserData(data ?? {});
-      });
+    const fetchData = async () => {
+      try {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select(`*`)
+          .eq('clerk_id', user?.id)
+          .single();
 
-    supabase
-      .from('users')
-      .select(`*`)
-      .limit(20)
-      .order('total_score', { ascending: false })
-      .then(({ data, error }) => {
-        setPlayers(data ?? []);
-      });
+        if (userError) {
+          console.error(userError);
+          return;
+        }
+
+        setUserData(userData ?? {});
+
+        const { data: playerData, error: playerError } = await supabase
+          .from('users')
+          .select(`*`)
+          .limit(20)
+          .order('total_score', { ascending: false });
+
+        if (playerError) {
+          console.error(playerError);
+          return;
+        }
+
+        setPlayers(playerData ?? []);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   useEffect(() => {
