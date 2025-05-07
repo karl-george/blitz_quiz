@@ -70,15 +70,21 @@ const Profile = () => {
     };
 
     fetchData();
-    findPlayerRank();
   }, []);
 
-  const findPlayerRank = () => {
-    const playerRank =
-      players?.findIndex((player) => player.username === userData?.username)! +
-      1;
-    setRank(playerRank);
-  };
+  useEffect(() => {
+    const findPlayerRank = () => {
+      if (!players || !userData?.username) return;
+
+      const playerRank = players.findIndex(
+        (player) => player.username === userData.username
+      );
+
+      setRank(playerRank + 1);
+    };
+
+    findPlayerRank();
+  }, [players, userData?.total_score]);
 
   const handleAvatarChange = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
