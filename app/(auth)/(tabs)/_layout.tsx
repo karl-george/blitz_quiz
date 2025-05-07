@@ -33,6 +33,12 @@ const TabLayout = () => {
           tabBarIcon: () => <Ionicons name='home' size={24} />,
         }}
       />
+      <Tabs.Screen
+        name='game-over/[cat]'
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 };
