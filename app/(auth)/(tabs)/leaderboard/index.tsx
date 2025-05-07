@@ -100,36 +100,22 @@ const Page = () => {
           <View className='pt-6 mb-12'>
             <View className='flex-row justify-center gap-4'>
               <View className='mt-8'>
-                <Image
-                  source={require('@/assets/images/icon.png')}
-                  className='rounded-xl w-28 h-28'
-                  width={100}
-                  height={100}
-                  resizeMode='cover'
-                />
-                <View className='p-2 mt-2 border-2 border-border_light bg-light_bg rounded-xl'>
-                  <Text
-                    className='font-bold text-center text-white'
-                    numberOfLines={1}
-                  >
-                    {players[0]?.username}
-                  </Text>
-                  <Text
-                    className='text-base text-center text-white'
-                    numberOfLines={1}
-                  >
-                    💎 {players[0]?.total_score}
+                <View>
+                  <Image
+                    source={
+                      user?.imageUrl
+                        ? { uri: user.imageUrl }
+                        : require('@/assets/images/icon.png')
+                    }
+                    className='w-32 h-32 rounded-xl'
+                    width={100}
+                    height={100}
+                    resizeMode='cover'
+                  />
+                  <Text className='absolute bottom-0 text-3xl text-center text-white right-3'>
+                    2
                   </Text>
                 </View>
-              </View>
-              <View>
-                <Image
-                  source={require('@/assets/images/icon.png')}
-                  className='w-32 h-32 rounded-xl'
-                  width={100}
-                  height={100}
-                  resizeMode='cover'
-                />
                 <View className='p-2 mt-2 border-2 border-border_light bg-light_bg rounded-xl'>
                   <Text
                     className='font-bold text-center text-white'
@@ -145,14 +131,55 @@ const Page = () => {
                   </Text>
                 </View>
               </View>
+              <View>
+                <View>
+                  <Image
+                    source={
+                      user?.imageUrl
+                        ? { uri: user.imageUrl }
+                        : require('@/assets/images/icon.png')
+                    }
+                    className='w-32 h-32 rounded-xl'
+                    width={100}
+                    height={100}
+                    resizeMode='cover'
+                  />
+                  <Text className='absolute bottom-0 text-3xl text-center text-white right-3'>
+                    1
+                  </Text>
+                </View>
+                <View className='p-2 mt-2 border-2 border-border_light bg-light_bg rounded-xl'>
+                  <Text
+                    className='font-bold text-center text-white'
+                    numberOfLines={1}
+                  >
+                    {players[0]?.username}
+                  </Text>
+                  <Text
+                    className='text-base text-center text-white'
+                    numberOfLines={1}
+                  >
+                    💎 {players[0]?.total_score}
+                  </Text>
+                </View>
+              </View>
               <View className='mt-8'>
-                <Image
-                  source={require('@/assets/images/icon.png')}
-                  className='rounded-xl w-28 h-28'
-                  width={100}
-                  height={100}
-                  resizeMode='cover'
-                />
+                <View>
+                  <Image
+                    source={
+                      user?.imageUrl
+                        ? { uri: user.imageUrl }
+                        : require('@/assets/images/icon.png')
+                    }
+                    className='w-32 h-32 rounded-xl'
+                    width={100}
+                    height={100}
+                    resizeMode='cover'
+                  />
+                  <Text className='absolute bottom-0 text-3xl text-center text-white right-3'>
+                    3
+                  </Text>
+                </View>
                 <View className='p-2 mt-2 border-2 border-border_light bg-light_bg rounded-xl'>
                   <Text
                     className='font-bold text-center text-white'
