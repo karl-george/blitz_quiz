@@ -201,7 +201,7 @@ const Page = () => {
           {/* Leaderboard list after top 3 */}
           <FlatList
             data={players.slice(3)}
-            contentContainerClassName='gap-2 pb-4'
+            contentContainerClassName='gap-2 pb-24'
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (

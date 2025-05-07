@@ -126,7 +126,7 @@ const Page = () => {
         <View className='pt-8'>
           <FlatList
             data={bookmarkedQuestions}
-            contentContainerClassName='gap-4'
+            contentContainerClassName='gap-4 pb-24'
             renderItem={({ item }) => (
               <Bookmark
                 question={item.question_text}
