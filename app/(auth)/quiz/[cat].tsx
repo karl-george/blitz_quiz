@@ -17,18 +17,50 @@ const Page = () => {
   const [score, setScore] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
-  const [userDetails, setUserDetails] = useState<User>();
+  const [userDetails, setUserDetails] = useState<User | null>(null);
   const [bookmarked, setBookmarked] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { cat } = useLocalSearchParams();
   const { user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (!user?.id) {
+          return;
+        }
+
+        setLoading(true);
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select(`*`)
+          .eq('clerk_id', user?.id)
+          .single();
+
+        if (userError) {
+          console.error('Error fetching user data:', userError);
+          return;
+        }
+
+        setUserDetails(userData ?? {});
+      } catch (err) {
+        console.error('Unexpected error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [user?.id]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+
         // Fetch questions
         const { data: questionsData, error: questionsError } = await supabase
           .from('questions')
@@ -44,20 +76,6 @@ const Page = () => {
         setQuestionIndex(
           Math.floor(Math.random() * (questionsData?.length || 1))
         );
-
-        // Fetch user details
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('clerk_id', user?.id)
-          .single();
-
-        if (userError) {
-          console.error('Error fetching user:', userError);
-          return;
-        }
-
-        setUserDetails(userData ?? {});
       } catch (err) {
         console.error('Unexpected error:', err);
       } finally {
@@ -66,47 +84,76 @@ const Page = () => {
     };
 
     fetchData();
-  }, [cat, user?.id]);
+  }, [cat]);
 
   useEffect(() => {
-    supabase
-      .from('bookmarks')
-      .select(`*`)
-      .eq('clerk_id', user?.id)
-      .then(({ data, error }) => {
-        setBookmarked(data ?? []);
-      });
-  }, [bookmarked]);
+    const fetchBookmarks = async () => {
+      try {
+        setLoading(true);
+
+        const { data: bookmarkData, error: bookmarkError } = await supabase
+          .from('bookmarks')
+          .select(`*`)
+          .eq('clerk_id', user?.id);
+        setBookmarked(bookmarkData ?? []);
+      } catch (err) {
+        console.error('Unexpected error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookmarks();
+  }, []);
 
   const handlePress = (option: string) => {
-    if (option == questions[questionIndex]?.correct_option) {
+    const currentQuestion = questions[questionIndex];
+    if (!currentQuestion) return;
+
+    if (option === currentQuestion.correct_option) {
       setScore((prev) => prev + 50);
       setCorrectAnswers((prev) => prev + 1);
     } else {
       setWrongAnswers((prev) => prev + 1);
     }
-
     setShowAnswer(true);
   };
 
   const handleGameOver = async () => {
-    const { error } = await supabase
-      .from('users')
-      .update({
-        total_score: userDetails?.total_score + score,
-        latest_score: score,
-        games_played: userDetails?.games_played + 1,
-        correct_answers: userDetails?.correct_answers + correctAnswers,
-        wrong_answers: userDetails?.wrong_answers + wrongAnswers,
-        updated_at: new Date(),
-      })
-      .eq('clerk_id', user?.id);
+    if (!userDetails || !user?.id) {
+      setError('User data not found');
+      return;
+    }
 
-    setCorrectAnswers(0);
-    setWrongAnswers(0);
-    setQuestionsAsked(0);
-    setScore(0);
-    router.replace(`/(auth)/(tabs)/game-over/${cat}`);
+    try {
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({
+          total_score: userDetails.total_score + score,
+          latest_score: score,
+          games_played: userDetails.games_played + 1,
+          correct_answers: userDetails.correct_answers + correctAnswers,
+          wrong_answers: userDetails.wrong_answers + wrongAnswers,
+          updated_at: new Date(),
+        })
+        .eq('clerk_id', user.id);
+
+      if (updateError) {
+        setError('Failed to update user data');
+        console.error('Error updating user:', updateError);
+        return;
+      }
+
+      // Reset game state
+      setCorrectAnswers(0);
+      setWrongAnswers(0);
+      setQuestionsAsked(0);
+      setScore(0);
+      router.replace(`/(auth)/(tabs)/game-over/${cat}`);
+    } catch (err) {
+      setError('An unexpected error occurred');
+      console.error('Unexpected error:', err);
+    }
   };
 
   useEffect(() => {
@@ -131,7 +178,7 @@ const Page = () => {
     if (showAnswer) {
       const timeout = setTimeout(() => {
         // If there are more questions else game over
-        if (questionsAsked < 10) {
+        if (questionsAsked < 2) {
           // Remove question from array
           const newQuestions = [...questions];
           newQuestions.splice(questionIndex, 1);
@@ -150,11 +197,26 @@ const Page = () => {
   }, [showAnswer]);
 
   const addQuestionToBookmark = async () => {
-    await supabase.from('bookmarks').insert({
-      question_id: questions[questionIndex]?.question_id,
-      clerk_id: user?.id,
-      created_at: new Date(),
-    });
+    if (!user?.id || !questions[questionIndex]?.question_id) {
+      setError('Cannot bookmark: Missing user or question data');
+      return;
+    }
+
+    try {
+      const { error: bookmarkError } = await supabase.from('bookmarks').insert({
+        question_id: questions[questionIndex].question_id,
+        clerk_id: user.id,
+        created_at: new Date(),
+      });
+
+      if (bookmarkError) {
+        setError('Failed to bookmark question');
+        console.error('Error bookmarking:', bookmarkError);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      console.error('Unexpected error:', err);
+    }
   };
 
   return (
@@ -232,16 +294,14 @@ const Page = () => {
             <TouchableOpacity
               key={questions[questionIndex]?.option_1}
               onPress={() => handlePress(questions[questionIndex]?.option_1)}
-              className={`
-            ${
-              showAnswer
-                ? questions[questionIndex]?.option_1 ==
-                  questions[questionIndex]?.correct_option
-                  ? 'bg-correct'
-                  : 'bg-wrong'
-                : ''
-            }
-           items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
+              className={`items-center justify-center px-4 py-5 border-2 border-border_light rounded-2xl ${
+                showAnswer
+                  ? questions[questionIndex]?.option_1 ===
+                    questions[questionIndex]?.correct_option
+                    ? 'bg-correct'
+                    : 'bg-wrong'
+                  : 'bg-light_bg'
+              }`}
             >
               <Text className='text-xl text-center text-white'>
                 {questions[questionIndex]?.option_1}
@@ -250,16 +310,14 @@ const Page = () => {
             <TouchableOpacity
               key={questions[questionIndex]?.option_2}
               onPress={() => handlePress(questions[questionIndex]?.option_2)}
-              className={`
-          ${
-            showAnswer
-              ? questions[questionIndex]?.option_2 ==
-                questions[questionIndex]?.correct_option
-                ? 'bg-correct'
-                : 'bg-wrong'
-              : ''
-          }
-           items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
+              className={`items-center justify-center px-4 py-5 border-2 border-border_light rounded-2xl ${
+                showAnswer
+                  ? questions[questionIndex]?.option_2 ===
+                    questions[questionIndex]?.correct_option
+                    ? 'bg-correct'
+                    : 'bg-wrong'
+                  : 'bg-light_bg'
+              }`}
             >
               <Text className='text-xl text-center text-white'>
                 {questions[questionIndex]?.option_2}
@@ -268,16 +326,14 @@ const Page = () => {
             <TouchableOpacity
               key={questions[questionIndex]?.option_3}
               onPress={() => handlePress(questions[questionIndex]?.option_3)}
-              className={`
-          ${
-            showAnswer
-              ? questions[questionIndex]?.option_3 ==
-                questions[questionIndex]?.correct_option
-                ? 'bg-correct'
-                : 'bg-wrong'
-              : ''
-          }
-           items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
+              className={`items-center justify-center px-4 py-5 border-2 border-border_light rounded-2xl ${
+                showAnswer
+                  ? questions[questionIndex]?.option_3 ===
+                    questions[questionIndex]?.correct_option
+                    ? 'bg-correct'
+                    : 'bg-wrong'
+                  : 'bg-light_bg'
+              }`}
             >
               <Text className='text-xl text-center text-white'>
                 {questions[questionIndex]?.option_3}
@@ -286,16 +342,14 @@ const Page = () => {
             <TouchableOpacity
               key={questions[questionIndex]?.option_4}
               onPress={() => handlePress(questions[questionIndex]?.option_4)}
-              className={`
-          ${
-            showAnswer
-              ? questions[questionIndex]?.option_4 ==
-                questions[questionIndex]?.correct_option
-                ? 'bg-correct'
-                : 'bg-wrong'
-              : ''
-          }
-           items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
+              className={`items-center justify-center px-4 py-5 border-2 border-border_light rounded-2xl ${
+                showAnswer
+                  ? questions[questionIndex]?.option_4 ===
+                    questions[questionIndex]?.correct_option
+                    ? 'bg-correct'
+                    : 'bg-wrong'
+                  : 'bg-light_bg'
+              }`}
             >
               <Text className='text-xl text-center text-white'>
                 {questions[questionIndex]?.option_4}
