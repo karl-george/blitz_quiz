@@ -41,6 +41,7 @@ const Page = () => {
         }
 
         setUserData(userData ?? {});
+        setError(''); // Clear error on success
 
         // Retrieve players
         const { data: playerData, error: playerError } = await supabase

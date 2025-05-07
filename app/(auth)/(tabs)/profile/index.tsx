@@ -7,7 +7,14 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const Profile = () => {
   const [editable, setEditable] = useState<boolean>(false);
@@ -15,6 +22,7 @@ const Profile = () => {
   const [userData, setUserData] = useState<User>();
   const [players, setPlayers] = useState<User[]>();
   const [rank, setRank] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const { user } = useUser();
   const { signOut } = useClerk();
@@ -22,6 +30,13 @@ const Profile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Early return if user not found
+        if (!user?.id) {
+          return;
+        }
+
+        setLoading(true);
+
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select(`*`)
@@ -49,6 +64,8 @@ const Profile = () => {
         setPlayers(playerData ?? []);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -97,93 +114,104 @@ const Profile = () => {
         colors={['#CCB6FF', '#986BFF']}
         className='absolute top-0 bottom-0 left-0 right-0'
       />
-      {/* Account Details Section */}
-      <View className='pt-10'>
-        <View className='pb-8 border-2 rounded-xl border-border_light bg-light_bg'>
-          <Image
-            src={user?.imageUrl}
-            className='absolute self-center border-2 -top-8 rounded-xl w-28 h-28 border-border_light'
-          />
-          <TouchableOpacity className='mt-24' onPress={handleAvatarChange}>
-            <Text className='text-xl text-center text-white'>
-              Change Avatar
-            </Text>
-          </TouchableOpacity>
-          <View className='px-4 mt-10'>
-            <View className='flex-row items-center'>
-              <Text className='text-xl text-white'>Name:</Text>
-              {editable ? (
-                <View className=''>
-                  <TextInput
-                    placeholder='Name...'
-                    placeholderTextColor='#DBDBDB'
-                    value={name}
-                    onChangeText={setName}
-                    className='w-[250px] ml-2 px-2 py-1 text-white border rounded-lg border-border_light bg-slate-500'
-                  />
-                </View>
-              ) : (
-                <Text className='ml-2 text-xl text-white'>
-                  {userData?.username}
+      {loading ? (
+        <View className='items-center justify-center flex-1'>
+          <ActivityIndicator size='large' color='#fff' />
+        </View>
+      ) : (
+        <View>
+          {/* Account Details Section */}
+          <View className='pt-10'>
+            <View className='pb-8 border-2 rounded-xl border-border_light bg-light_bg'>
+              <Image
+                src={user?.imageUrl}
+                className='absolute self-center border-2 -top-8 rounded-xl w-28 h-28 border-border_light'
+              />
+              <TouchableOpacity className='mt-24' onPress={handleAvatarChange}>
+                <Text className='text-xl text-center text-white'>
+                  Change Avatar
                 </Text>
-              )}
-              {!editable ? (
-                <TouchableOpacity
-                  className='ml-2'
-                  onPress={() => setEditable((prevState) => !prevState)}
-                >
-                  <Ionicons name='pencil-outline' size={18} color='white' />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity className='ml-2' onPress={handleNameChange}>
-                  <Ionicons name='checkmark' size={24} color='white' />
-                </TouchableOpacity>
-              )}
-            </View>
-            <View className='flex-row mt-2'>
-              <Text className='text-xl text-white'>Email:</Text>
-              <Text className='ml-2 text-xl text-white'>
-                {user?.emailAddresses[0].emailAddress}
-              </Text>
+              </TouchableOpacity>
+              <View className='px-4 mt-10'>
+                <View className='flex-row items-center'>
+                  <Text className='text-xl text-white'>Name:</Text>
+                  {editable ? (
+                    <View className=''>
+                      <TextInput
+                        placeholder='Name...'
+                        placeholderTextColor='#DBDBDB'
+                        value={name}
+                        onChangeText={setName}
+                        className='w-[250px] ml-2 px-2 py-1 text-white border rounded-lg border-border_light bg-slate-500'
+                      />
+                    </View>
+                  ) : (
+                    <Text className='ml-2 text-xl text-white'>
+                      {userData?.username}
+                    </Text>
+                  )}
+                  {!editable ? (
+                    <TouchableOpacity
+                      className='ml-2'
+                      onPress={() => setEditable((prevState) => !prevState)}
+                    >
+                      <Ionicons name='pencil-outline' size={18} color='white' />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      className='ml-2'
+                      onPress={handleNameChange}
+                    >
+                      <Ionicons name='checkmark' size={24} color='white' />
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <View className='flex-row mt-2'>
+                  <Text className='text-xl text-white'>Email:</Text>
+                  <Text className='ml-2 text-xl text-white'>
+                    {user?.emailAddresses[0].emailAddress}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
-        </View>
-      </View>
 
-      {/* User Game Info Section */}
-      <View className='mt-8'>
-        <View className='self-center'>
-          <Container title='Rank' value={rank} variant='small' />
-        </View>
-        <View className='flex-row justify-between mt-2'>
-          <Container
-            title='Correct Answers'
-            value={userData?.correct_answers}
-            variant='small'
-          />
-          <Container
-            title='Wrong Answers'
-            value={userData?.wrong_answers}
-            variant='small'
-          />
-          <Container
-            title='Games Played'
-            value={userData?.games_played}
-            variant='small'
-          />
-        </View>
-      </View>
+          {/* User Game Info Section */}
+          <View className='mt-8'>
+            <View className='self-center'>
+              <Container title='Rank' value={rank} variant='small' />
+            </View>
+            <View className='flex-row justify-between mt-2'>
+              <Container
+                title='Correct Answers'
+                value={userData?.correct_answers}
+                variant='small'
+              />
+              <Container
+                title='Wrong Answers'
+                value={userData?.wrong_answers}
+                variant='small'
+              />
+              <Container
+                title='Games Played'
+                value={userData?.games_played}
+                variant='small'
+              />
+            </View>
+          </View>
 
-      {/* Account Control Buttons */}
-      <View className='gap-4 mt-8'>
-        <Button title='Sign Out' variant='fullWidth' onPress={signOut} />
-        <Button
-          title='Delete Account'
-          variant='fullWidth'
-          type='destructive'
-          onPress={() => user?.delete()}
-        />
-      </View>
+          {/* Account Control Buttons */}
+          <View className='gap-4 mt-8'>
+            <Button title='Sign Out' variant='fullWidth' onPress={signOut} />
+            <Button
+              title='Delete Account'
+              variant='fullWidth'
+              type='destructive'
+              onPress={() => user?.delete()}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 };

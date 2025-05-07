@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import ProgressBar from 'react-native-progress/Bar';
 
 const Page = () => {
@@ -19,6 +19,7 @@ const Page = () => {
   const [wrongAnswers, setWrongAnswers] = useState(0);
   const [userDetails, setUserDetails] = useState<User>();
   const [bookmarked, setBookmarked] = useState<Bookmark[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const { cat } = useLocalSearchParams();
   const { user } = useUser();
@@ -27,6 +28,7 @@ const Page = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         // Fetch questions
         const { data: questionsData, error: questionsError } = await supabase
           .from('questions')
@@ -58,6 +60,8 @@ const Page = () => {
         setUserDetails(userData ?? {});
       } catch (err) {
         console.error('Unexpected error:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -159,70 +163,76 @@ const Page = () => {
         colors={['#CCB6FF', '#986BFF']}
         className='absolute top-0 bottom-0 left-0 right-0'
       />
-      <Stack.Screen
-        options={{
-          title: (cat[0].toUpperCase() + cat.slice(1)) as string,
-          headerTitleAlign: 'center',
-          headerTintColor: '#fff',
-          headerStyle: { backgroundColor: '#CCB6FF' },
-          headerShadowVisible: false,
-          headerRight: () => (
-            <TouchableOpacity onPress={addQuestionToBookmark}>
-              <Ionicons
-                name={
-                  bookmarked.some(
-                    (question) =>
-                      question.question_id ===
-                      questions[questionIndex]?.question_id
-                  )
-                    ? 'bookmark'
-                    : 'bookmark-outline'
-                }
-                size={24}
-                color='#fff'
-              />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-
-      {/* Questions left */}
-      <View className='pt-2'>
-        <Text className='text-base text-center text-white'>
-          Question {questionsAsked + 1}/10
-        </Text>
-      </View>
-
-      {/* Question Box */}
-      <View className='mt-4 border-2 border-border_light bg-light_bg rounded-2xl'>
-        <View className='items-center justify-center p-4 h-72'>
-          <Text className='text-2xl text-center text-white'>
-            {questions[questionIndex]?.question_text}
-          </Text>
+      {loading ? (
+        <View className='items-center justify-center flex-1'>
+          <ActivityIndicator size='large' color='#fff' />
         </View>
-      </View>
+      ) : (
+        <View>
+          <Stack.Screen
+            options={{
+              title: (cat[0].toUpperCase() + cat.slice(1)) as string,
+              headerTitleAlign: 'center',
+              headerTintColor: '#fff',
+              headerStyle: { backgroundColor: '#CCB6FF' },
+              headerShadowVisible: false,
+              headerRight: () => (
+                <TouchableOpacity onPress={addQuestionToBookmark}>
+                  <Ionicons
+                    name={
+                      bookmarked.some(
+                        (question) =>
+                          question.question_id ===
+                          questions[questionIndex]?.question_id
+                      )
+                        ? 'bookmark'
+                        : 'bookmark-outline'
+                    }
+                    size={24}
+                    color='#fff'
+                  />
+                </TouchableOpacity>
+              ),
+            }}
+          />
 
-      {/* Timer */}
-      <View className='flex-row items-center justify-center gap-4 mt-4'>
-        <Ionicons name='time-outline' size={20} color='#fff' />
-        <ProgressBar
-          progress={timeLeft / 10}
-          color='#C0B5F8'
-          borderwidth={1}
-          borderColor='#D7D2F2'
-          width={280}
-          height={10}
-          borderRadius={20}
-        />
-        <Text className='text-xl text-center text-white'>{timeLeft}</Text>
-      </View>
+          {/* Questions left */}
+          <View className='pt-2'>
+            <Text className='text-base text-center text-white'>
+              Question {questionsAsked}/10
+            </Text>
+          </View>
 
-      {/* Answers */}
-      <View className='gap-6 mt-16'>
-        <TouchableOpacity
-          key={questions[questionIndex]?.option_1}
-          onPress={() => handlePress(questions[questionIndex]?.option_1)}
-          className={`
+          {/* Question Box */}
+          <View className='mt-4 border-2 border-border_light bg-light_bg rounded-2xl'>
+            <View className='items-center justify-center p-4 h-72'>
+              <Text className='text-2xl text-center text-white'>
+                {questions[questionIndex]?.question_text}
+              </Text>
+            </View>
+          </View>
+
+          {/* Timer */}
+          <View className='flex-row items-center justify-center gap-4 mt-4'>
+            <Ionicons name='time-outline' size={20} color='#fff' />
+            <ProgressBar
+              progress={timeLeft / 10}
+              color='#C0B5F8'
+              borderwidth={1}
+              borderColor='#D7D2F2'
+              width={280}
+              height={10}
+              borderRadius={20}
+            />
+            <Text className='text-xl text-center text-white'>{timeLeft}</Text>
+          </View>
+
+          {/* Answers */}
+          <View className='gap-6 mt-16'>
+            <TouchableOpacity
+              key={questions[questionIndex]?.option_1}
+              onPress={() => handlePress(questions[questionIndex]?.option_1)}
+              className={`
             ${
               showAnswer
                 ? questions[questionIndex]?.option_1 ==
@@ -232,15 +242,15 @@ const Page = () => {
                 : ''
             }
            items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
-        >
-          <Text className='text-xl text-center text-white'>
-            {questions[questionIndex]?.option_1}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          key={questions[questionIndex]?.option_2}
-          onPress={() => handlePress(questions[questionIndex]?.option_2)}
-          className={`
+            >
+              <Text className='text-xl text-center text-white'>
+                {questions[questionIndex]?.option_1}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              key={questions[questionIndex]?.option_2}
+              onPress={() => handlePress(questions[questionIndex]?.option_2)}
+              className={`
           ${
             showAnswer
               ? questions[questionIndex]?.option_2 ==
@@ -250,15 +260,15 @@ const Page = () => {
               : ''
           }
            items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
-        >
-          <Text className='text-xl text-center text-white'>
-            {questions[questionIndex]?.option_2}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          key={questions[questionIndex]?.option_3}
-          onPress={() => handlePress(questions[questionIndex]?.option_3)}
-          className={`
+            >
+              <Text className='text-xl text-center text-white'>
+                {questions[questionIndex]?.option_2}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              key={questions[questionIndex]?.option_3}
+              onPress={() => handlePress(questions[questionIndex]?.option_3)}
+              className={`
           ${
             showAnswer
               ? questions[questionIndex]?.option_3 ==
@@ -268,15 +278,15 @@ const Page = () => {
               : ''
           }
            items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
-        >
-          <Text className='text-xl text-center text-white'>
-            {questions[questionIndex]?.option_3}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          key={questions[questionIndex]?.option_4}
-          onPress={() => handlePress(questions[questionIndex]?.option_4)}
-          className={`
+            >
+              <Text className='text-xl text-center text-white'>
+                {questions[questionIndex]?.option_3}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              key={questions[questionIndex]?.option_4}
+              onPress={() => handlePress(questions[questionIndex]?.option_4)}
+              className={`
           ${
             showAnswer
               ? questions[questionIndex]?.option_4 ==
@@ -286,12 +296,14 @@ const Page = () => {
               : ''
           }
            items-center justify-center px-4 py-5 border-2 border-border_light bg-light_bg rounded-2xl`}
-        >
-          <Text className='text-xl text-center text-white'>
-            {questions[questionIndex]?.option_4}
-          </Text>
-        </TouchableOpacity>
-      </View>
+            >
+              <Text className='text-xl text-center text-white'>
+                {questions[questionIndex]?.option_4}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
