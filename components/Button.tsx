@@ -1,9 +1,14 @@
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import {
+  Image,
+  ImageSourcePropType,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 
 interface ButtonProps {
   title: string;
-  icon?: string;
+  icon?: ImageSourcePropType;
   onPress?: () => void;
   variant: 'large' | 'small' | 'fullWidth';
   type?: 'destructive' | null;
@@ -36,7 +41,7 @@ const Button = ({ title, icon, onPress, variant, type }: ButtonProps) => {
       onPress={onPress}
       className={`items-center ${styles[variant].width} ${styles[variant].height} text-center border-2 border-border_light bg-light_bg rounded-xl justify-center`}
     >
-      {icon && <Text className='pt-4 pb-1 text-6xl'>{icon}</Text>}
+      {icon && <Image source={icon} className='mb-1' />}
       <Text
         className={`text-xl font-semibold ${
           type ? textType[type].color : 'text-white'
