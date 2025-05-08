@@ -2,179 +2,31 @@ export const categories = [
   {
     title: 'Animals',
     slug: 'animals',
-    icon: '🦍',
+    icon: require('../assets/images/animals.png'),
   },
   {
     title: 'Movies',
     slug: 'movies',
-    icon: '🎥',
+    icon: require('../assets/images/movies.png'),
   },
   {
     title: 'Music',
     slug: 'music',
-    icon: '🎧',
+    icon: require('../assets/images/music.png'),
   },
   {
     title: 'Science',
     slug: 'science',
-    icon: '🥼',
+    icon: require('../assets/images/science.png'),
   },
   {
     title: 'Sport',
     slug: 'sport',
-    icon: '⚽',
+    icon: require('../assets/images/sports.png'),
   },
   {
     title: 'Video Games',
     slug: 'video-games',
-    icon: '🕹️',
-  },
-];
-
-export const tempUsers = [
-  {
-    id: 1,
-    user_name: 'John Doe',
-    email: '0B2d2@example.com',
-    score: 1,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 2,
-    user_name: 'Lohn Doe',
-    email: 'tE4mL@example.com',
-    score: 2,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 3,
-    user_name: 'Kane Doe',
-    email: 'tE4mL@example.com',
-    score: 3,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 4,
-    user_name: 'Tane Doe',
-    email: 'tE4mL@example.com',
-    score: 4,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 5,
-    user_name: 'Yane Doe',
-    email: 'tE4mL@example.com',
-    score: 5,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 6,
-    user_name: 'Bane Doe',
-    email: 'tE4mL@example.com',
-    score: 6,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 7,
-    user_name: 'Pane Doe',
-    email: 'tE4mL@example.com',
-    score: 7,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 8,
-    user_name: 'Sane Doe',
-    email: 'tE4mL@example.com',
-    score: 8,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 9,
-    user_name: 'Qane Doe',
-    email: 'tE4mL@example.com',
-    score: 9,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 10,
-    user_name: 'Gane Doe',
-    email: 'tE4mL@example.com',
-    score: 10,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 11,
-    user_name: 'Mane Doe',
-    email: 'tE4mL@example.com',
-    score: 11,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 12,
-    user_name: 'Xane Doe',
-    email: 'tE4mL@example.com',
-    score: 12,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 13,
-    user_name: 'Zane Doe',
-    email: 'tE4mL@example.com',
-    score: 13,
-    avatar: '@/assets/images/icon.png',
-  },
-  {
-    id: 14,
-    user_name: 'Vane Doe',
-    email: 'tE4mL@example.com',
-    score: 14,
-    avatar: '@/assets/images/icon.png',
-  },
-];
-
-export const tempBookmarks = [
-  {
-    id: 1,
-    question: 'Who is the Dragon Reborn?',
-    option_1: "Rand Al'Thor",
-    option_2: "Egwene Al'Vere",
-    option_3: 'Matt Cauthon',
-    option_4: 'Perrin Aybara',
-    answer: "Rand Al'Thor",
-    category: 'Movies',
-  },
-  {
-    id: 2,
-    question: 'Who killed Asmodean?',
-    option_1: "Rand Al'Thor",
-    option_2: 'Lanfear',
-    option_3: 'Sammael',
-    option_4: 'Moghedian',
-    answer: 'Moghedian',
-    category: 'Movies',
-  },
-];
-
-export const tempQuestions = [
-  {
-    movies: {
-      0: {
-        question: 'Who is the Dragon Reborn?',
-        options: [
-          "Rand Al'Thor",
-          "Egwene Al'Vere",
-          'Matt Cauthon',
-          'Perrin Aybara',
-        ],
-        answer: "Rand Al'Thor",
-      },
-      1: {
-        question: 'Who killed Asmodean?',
-        options: ["Rand Al'Thor", 'Lanfear', 'Sammael', 'Moghedian'],
-        answer: 'Moghedian',
-      },
-    },
-    sports: {},
-    science: {},
+    icon: require('../assets/images/video-games.png'),
   },
 ];
