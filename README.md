@@ -1,50 +1,41 @@
-# Welcome to your Expo app 👋
+# Blitz Quiz
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Blitz Quiz is a fast paced trivia game allowing users to answer various trivia questions in an attempt to top the leaderboard. The app features rapid fire questions, multiple trivia categories and a competitive leaderboard.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Rapid fire questions
+- Competitive leaderboard
+- Instant feedback
+- Bookmark questions to review later
+- Comprehensive user stats
 
-   ```bash
-   npm install
-   ```
+## 🚀 Technologies
 
-2. Start the app
+### Frontend:
 
-   ```bash
-    npx expo start
-   ```
+React Native with Expo
 
-In the output, you'll find options to open the app in a
+Supabase
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Tailwind
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+React Native Reanimated
 
-## Get a fresh project
+Clerk
 
-When you're ready, run:
+## 🛠️ Installation
+* Clone the repository
+* Run `npm isntall`
+* Run `npx expo prebuild`
+* Run `npx expo run:ios` or `npx expo run:android`
 
-```bash
-npm run reset-project
-```
+## 📸 Screenshots
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<div>
+<img src="screenshots/home.png" width='200'>
+<img src="screenshots/quiz2.png" width='200'>
+<img src="screenshots/leaderboard.png" width='200'>
+<img src="screenshots/profile.png" width='200'>
+<img src="screenshots/bookmarks.png" width='200'>
+</div>
