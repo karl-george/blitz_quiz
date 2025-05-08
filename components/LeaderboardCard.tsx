@@ -1,5 +1,4 @@
 import { User } from '@/types';
-import { useUser } from '@clerk/clerk-expo';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Image, Text, View } from 'react-native';
@@ -28,7 +27,7 @@ const LeaderboardCard = ({
       <View className='flex-row items-center gap-3'>
         <Text className='text-xl font-bold text-white'>{rank}</Text>
         <Image
-          source={require('@/assets/images/icon.png')}
+          source={{ uri: avatar || 'https://i.pravatar.cc/300' }}
           className='rounded-full h-9 w-9'
         />
         <Text className='flex-1 text-xl font-bold text-white'>{name}</Text>
