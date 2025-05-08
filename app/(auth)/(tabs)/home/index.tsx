@@ -72,18 +72,21 @@ const Page = () => {
           />
 
           {/* CTA */}
-          <View className='flex-row w-full p-4 border-2 border-border_light bg-light_bg rounded-2xl'>
+          <View className='flex-row items-center justify-between w-full px-16 py-6 border-2 border-border_light bg-light_bg rounded-2xl'>
             <View>
-              <Text className='text-base text-white'>
+              <Text className='text-lg text-white'>
                 Welcome back, {user?.firstName}
               </Text>
-              <Text className='text-3xl text-white'>Let's play!</Text>
+              <Text className='mt-2 text-3xl font-bold text-white'>
+                Let's play!
+              </Text>
             </View>
-            <Image src='' />
+            {/* <Image source={require('@/assets/images/stars.png')} /> */}
+            <Text className='text-6xl'>💎</Text>
           </View>
 
           {/* Quiz Categories */}
-          <View className='mt-6'>
+          <View className='mt-12'>
             <Text className='text-xl font-bold text-white'>Categories</Text>
             <View className='flex-row flex-wrap justify-center gap-4 mt-4'>
               {categories.map((category) => (
