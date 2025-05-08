@@ -12,8 +12,6 @@ Blitz Quiz is a fast paced trivia game allowing users to answer various trivia q
 
 ## 🚀 Technologies
 
-### Frontend:
-
 React Native with Expo
 
 Supabase
