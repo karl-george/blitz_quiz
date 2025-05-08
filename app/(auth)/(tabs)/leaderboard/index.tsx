@@ -101,10 +101,22 @@ const Page = () => {
             <View className='flex-row justify-center gap-4'>
               <View className='mt-8'>
                 <View>
-                  <Image
+                  {/* <Image
                     source={
                       user?.imageUrl
                         ? { uri: user.imageUrl }
+                        : require('@/assets/images/icon.png')
+                    }
+                    className='w-32 h-32 rounded-xl'
+                    width={100}
+                    height={100}
+                    resizeMode='cover'
+                  /> */}
+
+                  <Image
+                    source={
+                      user?.imageUrl
+                        ? { uri: 'https://i.pravatar.cc/150?img=48' }
                         : require('@/assets/images/icon.png')
                     }
                     className='w-32 h-32 rounded-xl'
@@ -133,6 +145,17 @@ const Page = () => {
               </View>
               <View>
                 <View>
+                  {/* <Image
+                    source={
+                      user?.imageUrl
+                        ? { uri: user.imageUrl }
+                        : require('@/assets/images/icon.png')
+                    }
+                    className='w-32 h-32 rounded-xl'
+                    width={100}
+                    height={100}
+                    resizeMode='cover'
+                  /> */}
                   <Image
                     source={
                       user?.imageUrl
@@ -168,7 +191,7 @@ const Page = () => {
                   <Image
                     source={
                       user?.imageUrl
-                        ? { uri: user.imageUrl }
+                        ? { uri: 'https://i.pravatar.cc/150?img=49' }
                         : require('@/assets/images/icon.png')
                     }
                     className='w-32 h-32 rounded-xl'
